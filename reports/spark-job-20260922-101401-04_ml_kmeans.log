@@ -1,0 +1,81 @@
+﻿JOB=04_ml_kmeans.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:14:03 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:14:04 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:14:05 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081404-0004/events_1_app-20260922081404-0004.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 1:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=========>                                                 (1 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 4:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 7:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=========>                                                 (1 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 21:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 21:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 21:================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 24:>                                                         (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 24:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 24:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 25:>                                                         (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 25:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 25:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[ML] KMeans cluster centers:
+[-0.15919696 -0.56151595 -0.58766194 -0.52336262]
+[ 0.22154191 -0.47633283  1.30253129 -0.42324806]
+[ 0.08959179  1.55649343 -0.14735472  1.43029938]
+[OK] ML predictions written to Parquet and Iceberg.
+                                                                                

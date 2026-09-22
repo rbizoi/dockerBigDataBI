@@ -1,0 +1,47 @@
+﻿JOB=06_kafka_web_logs_to_delta.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:15:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:15:01 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:15:02 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081501-0006/events_1_app-20260922081501-0006.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 3) / 3]
+System.Management.Automation.RemoteException
+[Stage 0:=======================================>                   (2 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 2:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 3:>                  (0 + 2) / 3][Stage 4:>                  (0 + 0) / 3]
+System.Management.Automation.RemoteException
+[Stage 3:============>      (2 + 1) / 3][Stage 4:>                  (0 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 4:===================>                                       (1 + 2) / 3]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 12:============>     (2 + 0) / 3][Stage 13:>                 (0 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 12:============>     (2 + 1) / 3][Stage 13:============>     (2 + 1) / 3]
+System.Management.Automation.RemoteException
+[QUALITY] web logs valid=820 invalid=0
+                                                                                
+26/09/22 08:15:15 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+System.Management.Automation.RemoteException
+[Stage 21:============>     (2 + 1) / 3][Stage 22:>                 (0 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 22:===================>                                      (1 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 25:>                                                         (0 + 2) / 2]
+System.Management.Automation.RemoteException
+[Stage 25:=============================>                            (1 + 1) / 2]
+System.Management.Automation.RemoteException
+[OK] Kafka web.logs.raw -> Bronze Parquet -> Silver Delta completed.
+                                                                                

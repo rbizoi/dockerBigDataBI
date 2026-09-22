@@ -1,0 +1,702 @@
+[
+  {
+    "customer_id": 1,
+    "first_name": "Client1",
+    "last_name": "Formation1",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 2,
+    "first_name": "Client2",
+    "last_name": "Formation2",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 3,
+    "first_name": "Client3",
+    "last_name": "Formation3",
+    "country": "BE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 4,
+    "first_name": "Client4",
+    "last_name": "Formation4",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 5,
+    "first_name": "Client5",
+    "last_name": "Formation5",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 6,
+    "first_name": "Client6",
+    "last_name": "Formation6",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 7,
+    "first_name": "Client7",
+    "last_name": "Formation7",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 8,
+    "first_name": "Client8",
+    "last_name": "Formation8",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 9,
+    "first_name": "Client9",
+    "last_name": "Formation9",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 10,
+    "first_name": "Client10",
+    "last_name": "Formation10",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 11,
+    "first_name": "Client11",
+    "last_name": "Formation11",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 12,
+    "first_name": "Client12",
+    "last_name": "Formation12",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 13,
+    "first_name": "Client13",
+    "last_name": "Formation13",
+    "country": "BE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 14,
+    "first_name": "Client14",
+    "last_name": "Formation14",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 15,
+    "first_name": "Client15",
+    "last_name": "Formation15",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 16,
+    "first_name": "Client16",
+    "last_name": "Formation16",
+    "country": "IT",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 17,
+    "first_name": "Client17",
+    "last_name": "Formation17",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 18,
+    "first_name": "Client18",
+    "last_name": "Formation18",
+    "country": "BE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 19,
+    "first_name": "Client19",
+    "last_name": "Formation19",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 20,
+    "first_name": "Client20",
+    "last_name": "Formation20",
+    "country": "IT",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 21,
+    "first_name": "Client21",
+    "last_name": "Formation21",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 22,
+    "first_name": "Client22",
+    "last_name": "Formation22",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 23,
+    "first_name": "Client23",
+    "last_name": "Formation23",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 24,
+    "first_name": "Client24",
+    "last_name": "Formation24",
+    "country": "IT",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 25,
+    "first_name": "Client25",
+    "last_name": "Formation25",
+    "country": "FR",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 26,
+    "first_name": "Client26",
+    "last_name": "Formation26",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 27,
+    "first_name": "Client27",
+    "last_name": "Formation27",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 28,
+    "first_name": "Client28",
+    "last_name": "Formation28",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 29,
+    "first_name": "Client29",
+    "last_name": "Formation29",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 30,
+    "first_name": "Client30",
+    "last_name": "Formation30",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 31,
+    "first_name": "Client31",
+    "last_name": "Formation31",
+    "country": "BE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 32,
+    "first_name": "Client32",
+    "last_name": "Formation32",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 33,
+    "first_name": "Client33",
+    "last_name": "Formation33",
+    "country": "FR",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 34,
+    "first_name": "Client34",
+    "last_name": "Formation34",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 35,
+    "first_name": "Client35",
+    "last_name": "Formation35",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 36,
+    "first_name": "Client36",
+    "last_name": "Formation36",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 37,
+    "first_name": "Client37",
+    "last_name": "Formation37",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 38,
+    "first_name": "Client38",
+    "last_name": "Formation38",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 39,
+    "first_name": "Client39",
+    "last_name": "Formation39",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 40,
+    "first_name": "Client40",
+    "last_name": "Formation40",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 41,
+    "first_name": "Client41",
+    "last_name": "Formation41",
+    "country": "BE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 42,
+    "first_name": "Client42",
+    "last_name": "Formation42",
+    "country": "IT",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 43,
+    "first_name": "Client43",
+    "last_name": "Formation43",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 44,
+    "first_name": "Client44",
+    "last_name": "Formation44",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 45,
+    "first_name": "Client45",
+    "last_name": "Formation45",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 46,
+    "first_name": "Client46",
+    "last_name": "Formation46",
+    "country": "BE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 47,
+    "first_name": "Client47",
+    "last_name": "Formation47",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 48,
+    "first_name": "Client48",
+    "last_name": "Formation48",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 49,
+    "first_name": "Client49",
+    "last_name": "Formation49",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 50,
+    "first_name": "Client50",
+    "last_name": "Formation50",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 51,
+    "first_name": "Client51",
+    "last_name": "Formation51",
+    "country": "IT",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 52,
+    "first_name": "Client52",
+    "last_name": "Formation52",
+    "country": "IT",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 53,
+    "first_name": "Client53",
+    "last_name": "Formation53",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 54,
+    "first_name": "Client54",
+    "last_name": "Formation54",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 55,
+    "first_name": "Client55",
+    "last_name": "Formation55",
+    "country": "ES",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 56,
+    "first_name": "Client56",
+    "last_name": "Formation56",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 57,
+    "first_name": "Client57",
+    "last_name": "Formation57",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 58,
+    "first_name": "Client58",
+    "last_name": "Formation58",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 59,
+    "first_name": "Client59",
+    "last_name": "Formation59",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 60,
+    "first_name": "Client60",
+    "last_name": "Formation60",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 61,
+    "first_name": "Client61",
+    "last_name": "Formation61",
+    "country": "IT",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 62,
+    "first_name": "Client62",
+    "last_name": "Formation62",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 63,
+    "first_name": "Client63",
+    "last_name": "Formation63",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 64,
+    "first_name": "Client64",
+    "last_name": "Formation64",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 65,
+    "first_name": "Client65",
+    "last_name": "Formation65",
+    "country": "IT",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 66,
+    "first_name": "Client66",
+    "last_name": "Formation66",
+    "country": "FR",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 67,
+    "first_name": "Client67",
+    "last_name": "Formation67",
+    "country": "IT",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 68,
+    "first_name": "Client68",
+    "last_name": "Formation68",
+    "country": "IT",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 69,
+    "first_name": "Client69",
+    "last_name": "Formation69",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 70,
+    "first_name": "Client70",
+    "last_name": "Formation70",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 71,
+    "first_name": "Client71",
+    "last_name": "Formation71",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 72,
+    "first_name": "Client72",
+    "last_name": "Formation72",
+    "country": "ES",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 73,
+    "first_name": "Client73",
+    "last_name": "Formation73",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 74,
+    "first_name": "Client74",
+    "last_name": "Formation74",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 75,
+    "first_name": "Client75",
+    "last_name": "Formation75",
+    "country": "BE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 76,
+    "first_name": "Client76",
+    "last_name": "Formation76",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 77,
+    "first_name": "Client77",
+    "last_name": "Formation77",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 78,
+    "first_name": "Client78",
+    "last_name": "Formation78",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 79,
+    "first_name": "Client79",
+    "last_name": "Formation79",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 80,
+    "first_name": "Client80",
+    "last_name": "Formation80",
+    "country": "DE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 81,
+    "first_name": "Client81",
+    "last_name": "Formation81",
+    "country": "ES",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 82,
+    "first_name": "Client82",
+    "last_name": "Formation82",
+    "country": "BE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 83,
+    "first_name": "Client83",
+    "last_name": "Formation83",
+    "country": "DE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 84,
+    "first_name": "Client84",
+    "last_name": "Formation84",
+    "country": "ES",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 85,
+    "first_name": "Client85",
+    "last_name": "Formation85",
+    "country": "FR",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 86,
+    "first_name": "Client86",
+    "last_name": "Formation86",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 87,
+    "first_name": "Client87",
+    "last_name": "Formation87",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 88,
+    "first_name": "Client88",
+    "last_name": "Formation88",
+    "country": "DE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 89,
+    "first_name": "Client89",
+    "last_name": "Formation89",
+    "country": "BE",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 90,
+    "first_name": "Client90",
+    "last_name": "Formation90",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 91,
+    "first_name": "Client91",
+    "last_name": "Formation91",
+    "country": "FR",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 92,
+    "first_name": "Client92",
+    "last_name": "Formation92",
+    "country": "IT",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 93,
+    "first_name": "Client93",
+    "last_name": "Formation93",
+    "country": "ES",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 94,
+    "first_name": "Client94",
+    "last_name": "Formation94",
+    "country": "BE",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 95,
+    "first_name": "Client95",
+    "last_name": "Formation95",
+    "country": "IT",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 96,
+    "first_name": "Client96",
+    "last_name": "Formation96",
+    "country": "BE",
+    "segment": "SMB"
+  },
+  {
+    "customer_id": 97,
+    "first_name": "Client97",
+    "last_name": "Formation97",
+    "country": "ES",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 98,
+    "first_name": "Client98",
+    "last_name": "Formation98",
+    "country": "IT",
+    "segment": "Retail"
+  },
+  {
+    "customer_id": 99,
+    "first_name": "Client99",
+    "last_name": "Formation99",
+    "country": "ES",
+    "segment": "Enterprise"
+  },
+  {
+    "customer_id": 100,
+    "first_name": "Client100",
+    "last_name": "Formation100",
+    "country": "BE",
+    "segment": "Enterprise"
+  }
+]

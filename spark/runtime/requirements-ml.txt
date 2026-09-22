@@ -1,0 +1,3 @@
+# Required by PySpark MLlib DataFrame-based API.
+# No exact package version is imposed here; compatibility is validated at build time.
+numpy

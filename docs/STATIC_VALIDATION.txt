@@ -1,0 +1,26 @@
+Static validation — COMPLETE_STABLE_FIXED9_SPARKCFG_JUPYTER
+
+Result: 0 error(s), 1 warning(s), 198 passed checks
+
+Validated contracts include:
+- Compose YAML and the exact 25-service topology
+- localhost-only published ports
+- explicit healthchecks, including spark-jupyter
+- Spark 4 / Delta / Iceberg / S3 classpath constraints
+- imported Spark configuration and S3 event logging
+- JupyterLab 4.4.10 exact dependency pin
+- shared Jupyter/Spark Python and PySpark runtime
+- persistent notebook bind mount and valid starter notebook
+- generated Jupyter access token contract
+- writable `/home/spark` and explicit Jupyter/XDG runtime paths
+- explicit PySpark/Py4J `PYTHONPATH` and a build-tested stable Py4J alias
+- explicit non-root `spark` user, recursive ownership and real notebook writes
+- Python, Bash and PowerShell 5.1 structural syntax
+- Kafka, PostgreSQL, object-store, Trino, Airflow and Elastic contracts
+- training datasets and Spark jobs
+- exact SHA-256 manifest coverage for every distribution file
+
+Environment warning:
+Docker CLI/daemon is unavailable in the authoring environment. Runtime
+container validation is therefore performed by Install-BigDataLab.ps1 on the
+target Docker Desktop host before it can report installation success.

@@ -1,0 +1,20 @@
+﻿JOB=01_batch_to_parquet.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:13:03 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:13:04 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:13:05 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081304-0001/events_1_app-20260922081304-0001.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[QUALITY] total=2000 valid=2000 invalid=0
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 7:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[OK] Bronze Parquet written to s3a://lakehouse/bronze/
+                                                                                

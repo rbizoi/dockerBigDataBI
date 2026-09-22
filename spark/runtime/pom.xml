@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>training.bigdata</groupId>
+  <artifactId>spark-runtime-dependencies</artifactId>
+  <version>6.3.0</version>
+
+  <properties>
+    <delta.version>4.0.0</delta.version>
+    <iceberg.version>1.11.0</iceberg.version>
+    <hadoop.version>3.4.1</hadoop.version>
+    <spark.version>4.0.4</spark.version>
+
+    <!--
+      Hadoop 3.4.1 was published with AWS SDK v2 bundle 2.24.6.
+      Iceberg 1.11.0 was built against AWS SDK v2 2.44.4.
+      V6.3 deliberately provides exactly one AWS SDK bundle at 2.44.4
+      to avoid shaded/non-shaded duplicate software.amazon.awssdk classes.
+    -->
+    <aws.sdk.version>2.44.4</aws.sdk.version>
+    <scala.binary.version>2.13</scala.binary.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.delta</groupId>
+      <artifactId>delta-spark_${scala.binary.version}</artifactId>
+      <version>${delta.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.iceberg</groupId>
+      <artifactId>iceberg-spark-runtime-4.0_${scala.binary.version}</artifactId>
+      <version>${iceberg.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>${hadoop.version}</version>
+      <exclusions>
+        <!-- Never allow Hadoop to reintroduce its own AWS bundle. -->
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>bundle</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Single AWS SDK v2 implementation shared by Hadoop S3A and Iceberg. -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>bundle</artifactId>
+      <version>${aws.sdk.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+    </dependency>
+  </dependencies>
+</project>

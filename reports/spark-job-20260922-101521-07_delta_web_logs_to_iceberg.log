@@ -1,0 +1,56 @@
+﻿JOB=07_delta_web_logs_to_iceberg.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:15:22 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:15:23 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:15:24 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081523-0007/events_1_app-20260922081523-0007.zstd. This is Unsupported
+26/09/22 08:15:27 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[Stage 2:>                                                         (0 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:==>                                                       (2 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:======>                                                   (6 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:===========>                                             (10 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=================>                                       (15 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=======================>                                 (21 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=============================>                           (26 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=====================================>                   (33 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:============================================>            (39 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=======================================================> (49 + 1) / 50]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 4:=>                                                        (1 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:===============>                                         (14 + 1) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:==========================>                              (23 + 1) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:=========================================>               (36 + 1) / 50]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 13:=============================>                            (1 + 1) / 2]
+System.Management.Automation.RemoteException
+[Stage 15:>                                                         (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 23:>                                                         (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[OK] Silver Delta -> Iceberg Gold tables: events, traffic_hourly, path_daily, application_daily.
+                                                                                
