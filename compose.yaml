@@ -239,6 +239,7 @@ services:
       - "8080"
     ports:
       - "127.0.0.1:${SPARK_MASTER_UI_PORT:-18080}:8080"
+      - "127.0.0.1:${SPARK_MASTER_JOBS_UI_PORT:-14040}:4040"
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-master',7077),3); s.close()"]
       interval: 5s
