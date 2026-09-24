@@ -59,7 +59,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.03 RustFS
 >> - RustFS S3 : `http://localhost:9000` 
->> - RustFS console : `http://localhost:9001`
+>> - RustFS console : `http://localhost:9001`  <i><a href="http://localhost:9001">`http://localhost:9001`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS01.png" width="256">
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS02.png" width="256">
@@ -92,7 +92,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 
 ### 04.06 Trino
-- Trino : `http://localhost:8085`
+- Trino : `http://localhost:8085` <i><a href="http://localhost:8085">`http://localhost:8085`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/Trino.png" width="512">
 
@@ -104,8 +104,8 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.08 Elasticsearch
 
->> Elasticsearch : `http://localhost:9200` <i><a href="http://localhost:9200">`http://localhost:9200`</a><br></i>
->> Kibana : `http://localhost:5601` <i><a href="http://localhost:5601">`http://localhost:5601`</a><br></i>
+- Elasticsearch : `http://localhost:9200`
+>> Kibana : <i><a href="http://localhost:5601">`http://localhost:5601`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/elastic1.png" width="512">
 
