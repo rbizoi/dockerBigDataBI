@@ -1,0 +1,1 @@
+﻿[FAIL] System.Management.Automation.RuntimeException: Spark History Server HTTP endpoint not ready: http://127.0.0.1:18083

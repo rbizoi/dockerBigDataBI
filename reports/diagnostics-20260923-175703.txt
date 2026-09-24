@@ -1,0 +1,772 @@
+﻿Reason: Spark History Server HTTP endpoint not ready: http://127.0.0.1:18083
+
+=== docker version ===
+Client:
+ Version:           29.8.0
+ API version:       1.56
+ Go version:        go1.26.8
+ Git commit:        88096ef
+ Built:             Thu Sep  3 21:53:38 2026
+ OS/Arch:           windows/amd64
+ Context:           desktop-linux
+
+Server: Docker Desktop 4.91.0 (239619)
+ Engine:
+  Version:          29.8.0
+  API version:      1.56 (minimum version 1.40)
+  Go version:       go1.26.8
+  Git commit:       3ce5872
+  Built:            Thu Sep  3 21:51:20 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.4
+  GitCommit:        db8809540e1a7a9da5d518876894933ff55692ab
+ runc:
+  Version:          1.4.3
+  GitCommit:        v1.4.3-0-gbb14dabe
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+
+=== compose ps ===
+NAME                                             IMAGE                                                                                                 COMMAND                  SERVICE                       CREATED         STATUS                     PORTS
+bigdata-training-iceberg-catalog-permissions-1   alpine:3.22.5                                                                                         "/bin/sh -ec 'chown ÔÇª"   iceberg-catalog-permissions   3 minutes ago   Exited (0) 2 minutes ago   
+bigdata-training-iceberg-rest-1                  apache/iceberg-rest-fixture@sha256:db8de90b5b7693d4ac334c336f91d9bbe320d7b19f4f514d26de84cdfbcbfe8d   "java -jar iceberg-rÔÇª"   iceberg-rest                  3 minutes ago   Up 3 minutes (healthy)     127.0.0.1:8181->8181/tcp
+bigdata-training-kafka-1                         apache/kafka:4.3.1                                                                                    "/__cacert_entrypoinÔÇª"   kafka                         3 minutes ago   Up 3 minutes (healthy)     127.0.0.1:29092->9092/tcp
+bigdata-training-kafka-init-1                    apache/kafka:4.3.1                                                                                    "/bin/bash /opt/traiÔÇª"   kafka-init                    3 minutes ago   Exited (0) 2 minutes ago   
+bigdata-training-objectstore-1                   rustfs/rustfs:1.0.0-rc.6                                                                              "/entrypoint.sh rustÔÇª"   objectstore                   3 minutes ago   Up 3 minutes (healthy)     127.0.0.1:9000-9001->9000-9001/tcp
+bigdata-training-objectstore-init-1              bigdata-training/objectstore-init:local                                                               "python /app/init_s3ÔÇª"   objectstore-init              3 minutes ago   Exited (0) 2 minutes ago   
+bigdata-training-objectstore-permissions-1       alpine:3.22.5                                                                                         "/bin/sh -ec 'chown ÔÇª"   objectstore-permissions       3 minutes ago   Exited (0) 2 minutes ago   
+bigdata-training-postgres-bootstrap-1            postgres:17.11-alpine                                                                                 "/bin/sh -ec psql -vÔÇª"   postgres-bootstrap            3 minutes ago   Exited (0) 3 minutes ago   
+bigdata-training-postgres-source-1               postgres:17.11-alpine                                                                                 "docker-entrypoint.sÔÇª"   postgres-source               3 minutes ago   Up 3 minutes (healthy)     127.0.0.1:5432->5432/tcp
+bigdata-training-spark-history-1                 bigdata-training/spark-runtime:local                                                                  "/opt/entrypoint.sh ÔÇª"   spark-history                 2 minutes ago   Up 2 minutes (healthy)     127.0.0.1:18083->8083/tcp
+bigdata-training-spark-jupyter-1                 bigdata-training/spark-runtime:local                                                                  "/opt/entrypoint.sh ÔÇª"   spark-jupyter                 2 minutes ago   Up 2 minutes (healthy)     127.0.0.1:8888->8888/tcp
+bigdata-training-spark-master-1                  bigdata-training/spark-runtime:local                                                                  "/opt/entrypoint.sh ÔÇª"   spark-master                  2 minutes ago   Up 2 minutes (healthy)     127.0.0.1:14040->4040/tcp, 127.0.0.1:18080->8080/tcp
+bigdata-training-spark-worker-1-1                bigdata-training/spark-runtime:local                                                                  "/opt/entrypoint.sh ÔÇª"   spark-worker-1                2 minutes ago   Up 2 minutes (healthy)     127.0.0.1:18081->8081/tcp
+bigdata-training-spark-worker-2-1                bigdata-training/spark-runtime:local                                                                  "/opt/entrypoint.sh ÔÇª"   spark-worker-2                2 minutes ago   Up 2 minutes (healthy)     127.0.0.1:18082->8081/tcp
+
+=== inspect states ===
+--- postgres-source ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1215704,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:53:19.205397511Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:40.194351963Z","End":"2026-09-23T15:56:40.219629192Z","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"},{"Start":"2026-09-23T15:56:45.220212758Z","End":"2026-09-23T15:56:45.244895671Z","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"},{"Start":"2026-09-23T15:56:50.246140026Z","End":"2026-09-23T15:56:50.27122328Z","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"},{"Start":"2026-09-23T15:56:55.272269572Z","End":"2026-09-23T15:56:55.296227116Z","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"},{"Start":"2026-09-23T15:57:00.297040574Z","End":"2026-09-23T15:57:00.323189629Z","ExitCode":0,"Output":"/var/run/postgresql:5432 - accepting connections\n"}]}}
+--- kafka ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1215873,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:53:19.936051134Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:36.458730359Z","End":"2026-09-23T15:56:37.57715614Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:42.576548918Z","End":"2026-09-23T15:56:43.63419478Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:48.634789005Z","End":"2026-09-23T15:56:49.70426116Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:54.705427224Z","End":"2026-09-23T15:56:55.793554926Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:00.794622806Z","End":"2026-09-23T15:57:01.882555284Z","ExitCode":0,"Output":""}]}}
+--- objectstore ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1216088,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:53:20.333338278Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:41.559363628Z","End":"2026-09-23T15:56:41.582500292Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:46.583862613Z","End":"2026-09-23T15:56:46.607673621Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:51.608227086Z","End":"2026-09-23T15:56:51.632008839Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:56.632776672Z","End":"2026-09-23T15:56:56.659483055Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:01.66022415Z","End":"2026-09-23T15:57:01.688730111Z","ExitCode":0,"Output":""}]}}
+--- iceberg-rest ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1228668,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:53:58.239303596Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:44.486626588Z","End":"2026-09-23T15:56:44.512944767Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:49.513663485Z","End":"2026-09-23T15:56:49.539596775Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:54.540481654Z","End":"2026-09-23T15:56:54.564950849Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:59.565872488Z","End":"2026-09-23T15:56:59.595418298Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:04.59664894Z","End":"2026-09-23T15:57:04.622975163Z","ExitCode":0,"Output":""}]}}
+--- spark-master ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1236853,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:54:23.804851198Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:44.920594923Z","End":"2026-09-23T15:56:44.954376784Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:49.955320732Z","End":"2026-09-23T15:56:49.986991961Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:54.987867332Z","End":"2026-09-23T15:56:55.020163099Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:00.021219853Z","End":"2026-09-23T15:57:00.054388996Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:05.055258971Z","End":"2026-09-23T15:57:05.091199561Z","ExitCode":0,"Output":""}]}}
+--- spark-worker-1 ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1245226,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:54:50.919338357Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:41.811817013Z","End":"2026-09-23T15:56:41.847168405Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:46.84813138Z","End":"2026-09-23T15:56:46.882151484Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:51.882771758Z","End":"2026-09-23T15:56:51.920022743Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:56.921095364Z","End":"2026-09-23T15:56:56.95651814Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:01.957371049Z","End":"2026-09-23T15:57:01.989276248Z","ExitCode":0,"Output":""}]}}
+--- spark-worker-2 ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1245430,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:54:51.376316953Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:42.292695951Z","End":"2026-09-23T15:56:42.325913512Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:47.326738326Z","End":"2026-09-23T15:56:47.360864077Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:52.361652599Z","End":"2026-09-23T15:56:52.393781182Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:57.394574693Z","End":"2026-09-23T15:56:57.427983676Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:02.428772904Z","End":"2026-09-23T15:57:02.463146979Z","ExitCode":0,"Output":""}]}}
+--- spark-history ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1245329,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:54:51.137798009Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:42.061198217Z","End":"2026-09-23T15:56:42.093395429Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:47.09473057Z","End":"2026-09-23T15:56:47.129167034Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:52.130085405Z","End":"2026-09-23T15:56:52.165215887Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:57.16612848Z","End":"2026-09-23T15:56:57.201341746Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:02.202065558Z","End":"2026-09-23T15:57:02.237651034Z","ExitCode":0,"Output":""}]}}
+--- spark-jupyter ---
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":1246207,"ExitCode":0,"Error":"","StartedAt":"2026-09-23T15:54:57.072137245Z","FinishedAt":"0001-01-01T00:00:00Z","Health":{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-09-23T15:56:42.907034603Z","End":"2026-09-23T15:56:42.94108802Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:47.941468325Z","End":"2026-09-23T15:56:47.97179372Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:52.973118776Z","End":"2026-09-23T15:56:53.00655916Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:56:58.007882656Z","End":"2026-09-23T15:56:58.043928762Z","ExitCode":0,"Output":""},{"Start":"2026-09-23T15:57:03.045408164Z","End":"2026-09-23T15:57:03.079189531Z","ExitCode":0,"Output":""}]}}
+
+=== compose logs ===
+kafka-init-1        | [kafka-init] Waiting for Kafka Admin API on kafka:19092...
+spark-history-1     | WARNING: Using incubator modules: jdk.incubator.vector
+spark-history-1     | 26/09/23 15:54:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+spark-worker-2-1    | WARNING: Using incubator modules: jdk.incubator.vector
+spark-master-1      | WARNING: Using incubator modules: jdk.incubator.vector
+objectstore-init-1  | OBJECTSTORE_INIT_OK warehouse,lakehouse,checkpoints
+iceberg-rest-1      | [main] INFO org.apache.iceberg.rest.RESTCatalogServer - Creating rest_backend catalog with properties: {jdbc.password=password, s3.path-style-access=true, s3.endpoint=http://objectstore:9000, jdbc.user=user, clients=1, io-impl=org.apache.iceberg.aws.s3.S3FileIO, catalog-impl=org.apache.iceberg.jdbc.JdbcCatalog, jdbc.schema-version=V1, warehouse=s3://warehouse/, uri=jdbc:sqlite:/var/lib/iceberg/catalog.db, jdbc.strict-mode=true}
+iceberg-rest-1      | [main] INFO org.apache.iceberg.CatalogUtil - Loading custom FileIO implementation: org.apache.iceberg.aws.s3.S3FileIO
+iceberg-rest-1      | [main] INFO org.eclipse.jetty.server.Server - jetty-12.1.8; built: 2026-04-01T01:09:18.991Z; git: c9cdc9aaa434a3665b8a53b4d1cc3684992da649; jvm 17.0.19+10-LTS
+objectstore-1       | Initializing data directories: /data
+objectstore-1       | Initializing log directory: /logs
+objectstore-1       | Starting: /usr/bin/rustfs  /data
+spark-history-1     | 26/09/23 15:54:52 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+spark-worker-1-1    | WARNING: Using incubator modules: jdk.incubator.vector
+spark-worker-1-1    | 26/09/23 15:54:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+spark-master-1      | 26/09/23 15:54:25 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+objectstore-init-1  | OBJECTSTORE_INIT_OK warehouse,lakehouse,checkpoints
+spark-jupyter-1     | [I 2026-09-23 15:54:58.324 ServerApp] jupyter_lsp | extension was successfully linked.
+kafka-1             | 	remote.log.manager.follower.thread.pool.size = 2
+iceberg-rest-1      | [main] INFO org.eclipse.jetty.server.handler.ContextHandler - Started oeje10s.ServletContextHandler@1df8b5b8{ROOT,/,b=null,a=AVAILABLE,h=oejcs.CompressionHandler@23202fce{STARTED,supported=gzip}}
+postgres-source-1   | The files belonging to this database system will be owned by user "postgres".
+kafka-init-1        | [kafka-init] Creating topic sales.raw (attempt 1/10)...
+spark-history-1     | SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+spark-history-1     | SLF4J: Defaulting to no-operation (NOP) logger implementation
+spark-history-1     | SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+spark-worker-2-1    | 26/09/23 15:54:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+kafka-1             | 	remote.log.manager.task.interval.ms = 30000
+iceberg-rest-1      | [main] INFO org.eclipse.jetty.ee10.servlet.ServletContextHandler - Started oeje10s.ServletContextHandler@1df8b5b8{ROOT,/,b=null,a=AVAILABLE,h=oejcs.CompressionHandler@23202fce{STARTED,supported=gzip}}
+iceberg-rest-1      | [main] INFO org.eclipse.jetty.server.AbstractConnector - Started oejs.ServerConnector@6b58b9e9{HTTP/1.1, (http/1.1)}{0.0.0.0:8181}
+iceberg-rest-1      | [main] INFO org.eclipse.jetty.server.Server - Started oejs.Server@52e7a6b2{STARTING}[12.1.8,sto=0] @45ms
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.326 ServerApp] jupyter_server_terminals | extension was successfully linked.
+objectstore-init-1  | OBJECTSTORE_INIT_OK warehouse,lakehouse,checkpoints
+postgres-source-1   | This user must also own the server process.
+postgres-source-1   | 
+kafka-1             | 	remote.log.manager.task.retry.backoff.max.ms = 30000
+objectstore-init-1  | OBJECTSTORE_INIT_OK warehouse,lakehouse,checkpoints
+kafka-init-1        | Created topic sales.raw.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.328 ServerApp] jupyterlab | extension was successfully linked.
+postgres-source-1   | The database cluster will be initialized with locale "en_US.utf8".
+kafka-1             | 	remote.log.manager.task.retry.backoff.ms = 500
+kafka-init-1        | [kafka-init] Creating topic customers.raw (attempt 1/10)...
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+kafka-init-1        | Created topic customers.raw.
+kafka-init-1        | [kafka-init] Creating topic catalog.raw (attempt 1/10)...
+spark-jupyter-1     | [I 2026-09-23 15:54:58.328 ServerApp] Writing Jupyter server cookie secret to /home/spark/.local/share/jupyter/runtime/jupyter_cookie_secret
+postgres-source-1   | The default database encoding has accordingly been set to "UTF8".
+kafka-1             | 	remote.log.manager.task.retry.jitter = 0.2
+kafka-1             | 	remote.log.manager.thread.pool.size = 2
+kafka-1             | 	remote.log.metadata.custom.metadata.max.bytes = 128
+spark-jupyter-1     | [I 2026-09-23 15:54:58.496 ServerApp] notebook_shim | extension was successfully linked.
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+kafka-init-1        | Created topic catalog.raw.
+kafka-init-1        | [kafka-init] Creating topic opendata.raw (attempt 1/10)...
+postgres-source-1   | The default text search configuration will be set to "english".
+postgres-source-1   | 
+postgres-source-1   | Data page checksums are disabled.
+postgres-source-1   | 
+postgres-source-1   | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+spark-jupyter-1     | [I 2026-09-23 15:54:58.504 ServerApp] notebook_shim | extension was successfully loaded.
+postgres-source-1   | creating subdirectories ... ok
+postgres-source-1   | selecting dynamic shared memory implementation ... posix
+postgres-source-1   | selecting default "max_connections" ... 100
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+kafka-init-1        | Created topic opendata.raw.
+postgres-source-1   | selecting default "shared_buffers" ... 128MB
+postgres-source-1   | selecting default time zone ... UTC
+postgres-source-1   | creating configuration files ... ok
+kafka-init-1        | [kafka-init] Creating topic application.logs (attempt 1/10)...
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+postgres-source-1   | running bootstrap script ... ok
+postgres-source-1   | sh: locale: not found
+postgres-source-1   | 2026-09-23 15:53:20.495 UTC [35] WARNING:  no usable system locales were found
+postgres-source-1   | performing post-bootstrap initialization ... ok
+spark-jupyter-1     | [I 2026-09-23 15:54:58.506 ServerApp] jupyter_lsp | extension was successfully loaded.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.507 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.508 LabApp] JupyterLab extension loaded from /usr/local/lib/python3.10/dist-packages/jupyterlab
+spark-jupyter-1     | [I 2026-09-23 15:54:58.508 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
+postgres-source-1   | initdb: warning: enabling "trust" authentication for local connections
+postgres-source-1   | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-source-1   | syncing data to disk ... ok
+postgres-source-1   | 
+postgres-source-1   | 
+spark-jupyter-1     | [I 2026-09-23 15:54:58.508 LabApp] Extension Manager is 'pypi'.
+kafka-1             | 	remote.log.metadata.manager.class.name = org.apache.kafka.server.log.remote.metadata.storage.TopicBasedRemoteLogMetadataManager
+kafka-1             | 	remote.log.metadata.manager.class.path = null
+kafka-1             | 	remote.log.metadata.manager.impl.prefix = rlmm.config.
+kafka-1             | 	remote.log.metadata.manager.listener.name = null
+kafka-init-1        | Created topic application.logs.
+postgres-source-1   | Success. You can now start the database server using:
+kafka-1             | 	remote.log.reader.max.pending.tasks = 100
+kafka-1             | 	remote.log.reader.threads = 10
+kafka-init-1        | [kafka-init] Creating topic web.logs.raw (attempt 1/10)...
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+kafka-init-1        | Created topic web.logs.raw.
+kafka-init-1        | [kafka-init] Creating topic web.logs.dlq (attempt 1/10)...
+kafka-1             | 	remote.log.storage.manager.class.name = null
+kafka-1             | 	remote.log.storage.manager.class.path = null
+kafka-init-1        | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+kafka-init-1        | Created topic web.logs.dlq.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.548 ServerApp] jupyterlab | extension was successfully loaded.
+spark-jupyter-1     | [I 2026-09-23 15:54:58.549 ServerApp] Serving notebooks from local directory: /opt/spark/notebooks
+spark-jupyter-1     | [I 2026-09-23 15:54:58.549 ServerApp] Jupyter Server 2.21.1 is running at:
+kafka-init-1        | [kafka-init] Kafka topics ready:
+kafka-init-1        | application.logs
+kafka-init-1        | catalog.raw
+kafka-init-1        | customers.raw
+kafka-init-1        | opendata.raw
+kafka-init-1        | sales.raw
+postgres-source-1   | 
+postgres-source-1   |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-source-1   | 
+kafka-init-1        | web.logs.dlq
+kafka-init-1        | web.logs.raw
+kafka-init-1        | [kafka-init] Validation OK: all 7 required topics exist.
+kafka-init-1        | [kafka-init] Waiting for Kafka Admin API on kafka:19092...
+spark-jupyter-1     | [I 2026-09-23 15:54:58.549 ServerApp] http://0.0.0.0:8888/lab?token=...
+spark-jupyter-1     | [I 2026-09-23 15:54:58.549 ServerApp]     http://127.0.0.1:8888/lab?token=...
+postgres-source-1   | waiting for server to start....2026-09-23 15:53:22.177 UTC [41] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-source-1   | 2026-09-23 15:53:22.179 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+kafka-1             | 	remote.log.storage.manager.impl.prefix = rsm.config.
+kafka-init-1        | [kafka-init] Topic already exists: sales.raw
+kafka-init-1        | [kafka-init] Topic already exists: customers.raw
+spark-jupyter-1     | [I 2026-09-23 15:54:58.549 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+kafka-1             | 	remote.log.storage.system.enable = false
+kafka-1             | 	replica.fetch.backoff.ms = 1000
+kafka-1             | 	replica.fetch.max.bytes = 1048576
+kafka-init-1        | [kafka-init] Topic already exists: catalog.raw
+postgres-source-1   | 2026-09-23 15:53:22.184 UTC [44] LOG:  database system was shut down at 2026-09-23 15:53:20 UTC
+postgres-source-1   | 2026-09-23 15:53:22.189 UTC [41] LOG:  database system is ready to accept connections
+spark-jupyter-1     | [I 2026-09-23 15:54:58.728 ServerApp] Skipped non-installed server(s): basedpyright, bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyrefly, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+spark-jupyter-1     | [I 2026-09-23 15:55:53.298 ServerApp] 302 GET / (@172.18.0.1) 0.63ms
+spark-jupyter-1     | [W 2026-09-23 15:55:53.367 ServerApp] Clearing invalid/expired login cookie username-127-0-0-1-8888
+spark-jupyter-1     | [I 2026-09-23 15:55:53.367 LabApp] 302 GET /lab? (@172.18.0.1) 1.31ms
+postgres-source-1   |  done
+kafka-1             | 	replica.fetch.min.bytes = 1
+kafka-1             | 	replica.fetch.response.max.bytes = 10485760
+kafka-init-1        | [kafka-init] Topic already exists: opendata.raw
+kafka-init-1        | [kafka-init] Topic already exists: application.logs
+postgres-source-1   | server started
+postgres-source-1   | CREATE DATABASE
+kafka-1             | 	replica.fetch.wait.max.ms = 500
+postgres-source-1   | 
+kafka-init-1        | [kafka-init] Topic already exists: web.logs.raw
+kafka-1             | 	replica.high.watermark.checkpoint.interval.ms = 5000
+kafka-1             | 	replica.lag.time.max.ms = 30000
+kafka-init-1        | [kafka-init] Topic already exists: web.logs.dlq
+kafka-init-1        | [kafka-init] Kafka topics ready:
+postgres-source-1   | 
+kafka-init-1        | application.logs
+kafka-1             | 	replica.selector.class = null
+postgres-source-1   | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/01_schema.sql
+postgres-source-1   | CREATE TABLE
+kafka-1             | 	replica.socket.receive.buffer.bytes = 65536
+kafka-1             | 	replica.socket.timeout.ms = 30000
+kafka-init-1        | catalog.raw
+kafka-init-1        | customers.raw
+kafka-init-1        | opendata.raw
+kafka-init-1        | sales.raw
+kafka-init-1        | web.logs.dlq
+kafka-init-1        | web.logs.raw
+kafka-init-1        | [kafka-init] Validation OK: all 7 required topics exist.
+postgres-source-1   | CREATE TABLE
+postgres-source-1   | CREATE TABLE
+kafka-1             | 	replication.quota.window.num = 11
+kafka-1             | 	replication.quota.window.size.seconds = 1
+kafka-1             | 	request.timeout.ms = 30000
+kafka-init-1        | [kafka-init] Waiting for Kafka Admin API on kafka:19092...
+kafka-init-1        | [kafka-init] Topic already exists: sales.raw
+kafka-init-1        | [kafka-init] Topic already exists: customers.raw
+kafka-1             | 	sasl.client.callback.handler.class = null
+kafka-1             | 	sasl.enabled.mechanisms = [GSSAPI]
+kafka-1             | 	sasl.jaas.config = null
+kafka-init-1        | [kafka-init] Topic already exists: catalog.raw
+kafka-1             | 	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+postgres-source-1   | CREATE TABLE
+postgres-source-1   | CREATE INDEX
+postgres-source-1   | CREATE INDEX
+postgres-source-1   | CREATE DATABASE
+kafka-1             | 	sasl.kerberos.min.time.before.relogin = 60000
+kafka-1             | 	sasl.kerberos.principal.to.local.rules = [DEFAULT]
+kafka-1             | 	sasl.kerberos.service.name = null
+kafka-1             | 	sasl.kerberos.ticket.renew.jitter = 0.05
+kafka-1             | 	sasl.kerberos.ticket.renew.window.factor = 0.8
+kafka-1             | 	sasl.login.callback.handler.class = null
+kafka-1             | 	sasl.login.class = null
+kafka-1             | 	sasl.login.connect.timeout.ms = null
+kafka-init-1        | [kafka-init] Topic already exists: opendata.raw
+kafka-init-1        | [kafka-init] Topic already exists: application.logs
+postgres-source-1   | 
+postgres-source-1   | 
+kafka-1             | 	sasl.login.read.timeout.ms = null
+kafka-1             | 	sasl.login.refresh.buffer.seconds = 300
+postgres-source-1   | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/02_seed.sql
+postgres-source-1   | INSERT 0 5
+kafka-init-1        | [kafka-init] Topic already exists: web.logs.raw
+kafka-init-1        | [kafka-init] Topic already exists: web.logs.dlq
+kafka-1             | 	sasl.login.refresh.min.period.seconds = 60
+kafka-1             | 	sasl.login.refresh.window.factor = 0.8
+kafka-1             | 	sasl.login.refresh.window.jitter = 0.05
+kafka-1             | 	sasl.login.retry.backoff.max.ms = 10000
+kafka-1             | 	sasl.login.retry.backoff.ms = 100
+kafka-1             | 	sasl.mechanism.controller.protocol = GSSAPI
+kafka-1             | 	sasl.mechanism.inter.broker.protocol = GSSAPI
+kafka-1             | 	sasl.oauthbearer.assertion.algorithm = RS256
+kafka-1             | 	sasl.oauthbearer.assertion.claim.aud = null
+kafka-1             | 	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+kafka-1             | 	sasl.oauthbearer.assertion.claim.iss = null
+kafka-1             | 	sasl.oauthbearer.assertion.claim.jti.include = false
+kafka-1             | 	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+kafka-1             | 	sasl.oauthbearer.assertion.claim.sub = null
+kafka-1             | 	sasl.oauthbearer.assertion.file = null
+kafka-init-1        | [kafka-init] Kafka topics ready:
+kafka-1             | 	sasl.oauthbearer.assertion.private.key.file = null
+kafka-1             | 	sasl.oauthbearer.assertion.private.key.passphrase = null
+kafka-1             | 	sasl.oauthbearer.assertion.template.file = null
+postgres-source-1   | INSERT 0 5
+postgres-source-1   | INSERT 0 5
+postgres-source-1   | INSERT 0 6
+postgres-source-1   | 
+postgres-source-1   | 
+postgres-source-1   | waiting for server to shut down....2026-09-23 15:53:22.412 UTC [41] LOG:  received fast shutdown request
+postgres-source-1   | 2026-09-23 15:53:22.414 UTC [41] LOG:  aborting any active transactions
+postgres-source-1   | 2026-09-23 15:53:22.415 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+postgres-source-1   | 2026-09-23 15:53:22.415 UTC [42] LOG:  shutting down
+postgres-source-1   | 2026-09-23 15:53:22.417 UTC [42] LOG:  checkpoint starting: shutdown immediate
+kafka-init-1        | application.logs
+kafka-init-1        | catalog.raw
+kafka-init-1        | customers.raw
+kafka-init-1        | opendata.raw
+kafka-init-1        | sales.raw
+kafka-init-1        | web.logs.dlq
+postgres-source-1   | 2026-09-23 15:53:22.649 UTC [42] LOG:  checkpoint complete: wrote 1874 buffers (11.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.024 s, sync=0.203 s, total=0.235 s; sync files=613, longest=0.003 s, average=0.001 s; distance=8620 kB, estimate=8620 kB; lsn=0/1D5F230, redo lsn=0/1D5F230
+postgres-source-1   | 2026-09-23 15:53:22.654 UTC [41] LOG:  database system is shut down
+postgres-source-1   |  done
+kafka-init-1        | web.logs.raw
+kafka-init-1        | [kafka-init] Validation OK: all 7 required topics exist.
+kafka-1             | 	sasl.oauthbearer.client.credentials.client.id = null
+postgres-source-1   | server stopped
+postgres-source-1   | 
+postgres-source-1   | PostgreSQL init process complete; ready for start up.
+kafka-1             | 	sasl.oauthbearer.client.credentials.client.secret = null
+kafka-1             | 	sasl.oauthbearer.clock.skew.seconds = 30
+postgres-source-1   | 
+kafka-1             | 	sasl.oauthbearer.expected.audience = []
+postgres-source-1   | 2026-09-23 15:53:22.729 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-source-1   | 2026-09-23 15:53:22.729 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-source-1   | 2026-09-23 15:53:22.729 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+kafka-1             | 	sasl.oauthbearer.expected.issuer = null
+kafka-1             | 	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+kafka-1             | 	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+kafka-1             | 	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+kafka-1             | 	sasl.oauthbearer.jwks.endpoint.url = null
+postgres-source-1   | 2026-09-23 15:53:22.732 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-source-1   | 2026-09-23 15:53:22.736 UTC [61] LOG:  database system was shut down at 2026-09-23 15:53:22 UTC
+postgres-source-1   | 2026-09-23 15:53:22.755 UTC [1] LOG:  database system is ready to accept connections
+kafka-1             | 	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+kafka-1             | 	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+kafka-1             | 	sasl.oauthbearer.scope = null
+kafka-1             | 	sasl.oauthbearer.scope.claim.name = scope
+kafka-1             | 	sasl.oauthbearer.sub.claim.name = sub
+kafka-1             | 	sasl.oauthbearer.token.endpoint.url = null
+kafka-1             | 	sasl.server.callback.handler.class = null
+kafka-1             | 	sasl.server.max.receive.size = 524288
+kafka-1             | 	security.inter.broker.protocol = PLAINTEXT
+kafka-1             | 	security.providers = null
+kafka-1             | 	server.max.startup.time.ms = 9223372036854775807
+kafka-1             | 	share.coordinator.append.linger.ms = -1
+kafka-1             | 	share.coordinator.cached.buffer.max.bytes = 1048588
+kafka-1             | 	share.coordinator.cold.partition.snapshot.interval.ms = 300000
+kafka-1             | 	share.coordinator.load.buffer.size = 5242880
+kafka-1             | 	share.coordinator.snapshot.update.records.per.snapshot = 500
+kafka-1             | 	share.coordinator.state.topic.compression.codec = 0
+kafka-1             | 	share.coordinator.state.topic.min.isr = 1
+kafka-1             | 	share.coordinator.state.topic.num.partitions = 50
+kafka-1             | 	share.coordinator.state.topic.prune.interval.ms = 300000
+kafka-1             | 	share.coordinator.state.topic.replication.factor = 1
+kafka-1             | 	share.coordinator.state.topic.segment.bytes = 104857600
+kafka-1             | 	share.coordinator.threads = 1
+kafka-1             | 	share.coordinator.write.timeout.ms = 5000
+kafka-1             | 	share.fetch.purgatory.purge.interval.requests = 1000
+kafka-1             | 	socket.connection.setup.timeout.max.ms = 30000
+kafka-1             | 	socket.connection.setup.timeout.ms = 10000
+kafka-1             | 	socket.listen.backlog.size = 50
+kafka-1             | 	socket.receive.buffer.bytes = 102400
+kafka-1             | 	socket.request.max.bytes = 104857600
+kafka-1             | 	socket.send.buffer.bytes = 102400
+kafka-1             | 	ssl.allow.dn.changes = false
+kafka-1             | 	ssl.allow.san.changes = false
+kafka-1             | 	ssl.cipher.suites = []
+kafka-1             | 	ssl.client.auth = none
+kafka-1             | 	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+kafka-1             | 	ssl.endpoint.identification.algorithm = https
+kafka-1             | 	ssl.engine.factory.class = null
+kafka-1             | 	ssl.key.password = null
+kafka-1             | 	ssl.keymanager.algorithm = SunX509
+kafka-1             | 	ssl.keystore.certificate.chain = null
+kafka-1             | 	ssl.keystore.key = null
+kafka-1             | 	ssl.keystore.location = null
+kafka-1             | 	ssl.keystore.password = null
+kafka-1             | 	ssl.keystore.type = JKS
+kafka-1             | 	ssl.principal.mapping.rules = DEFAULT
+kafka-1             | 	ssl.protocol = TLSv1.3
+kafka-1             | 	ssl.provider = null
+kafka-1             | 	ssl.secure.random.implementation = null
+kafka-1             | 	ssl.trustmanager.algorithm = PKIX
+kafka-1             | 	ssl.truststore.certificates = null
+kafka-1             | 	ssl.truststore.location = null
+kafka-1             | 	ssl.truststore.password = null
+kafka-1             | 	ssl.truststore.type = JKS
+kafka-1             | 	telemetry.max.bytes = 1048576
+kafka-1             | 	transaction.abort.timed.out.transaction.cleanup.interval.ms = 10000
+kafka-1             | 	transaction.max.timeout.ms = 900000
+kafka-1             | 	transaction.partition.verification.enable = true
+kafka-1             | 	transaction.remove.expired.transaction.cleanup.interval.ms = 3600000
+kafka-1             | 	transaction.state.log.load.buffer.size = 5242880
+kafka-1             | 	transaction.state.log.min.isr = 1
+kafka-1             | 	transaction.state.log.num.partitions = 50
+kafka-1             | 	transaction.state.log.replication.factor = 1
+kafka-1             | 	transaction.state.log.segment.bytes = 104857600
+kafka-1             | 	transaction.two.phase.commit.enable = false
+kafka-1             | 	transactional.id.expiration.ms = 604800000
+kafka-1             | 	unclean.leader.election.enable = false
+kafka-1             | 	unclean.leader.election.interval.ms = 300000
+kafka-1             | 	unstable.api.versions.enable = false
+kafka-1             | 	unstable.feature.versions.enable = false
+kafka-1             |  (org.apache.kafka.common.config.AbstractConfig)
+kafka-1             | [2026-09-23 15:53:23,622] INFO [BrokerServer id=1] Waiting for the broker to be unfenced (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,650] INFO [BrokerLifecycleManager id=1] The broker has been unfenced. Transitioning from RECOVERY to RUNNING. (org.apache.kafka.server.BrokerLifecycleManager)
+kafka-1             | [2026-09-23 15:53:23,650] INFO [BrokerServer id=1] Finished waiting for the broker to be unfenced (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,651] INFO authorizerStart completed for endpoint PLAINTEXT. Endpoint is now READY. (org.apache.kafka.server.network.EndpointReadyFutures)
+kafka-1             | [2026-09-23 15:53:23,651] INFO authorizerStart completed for endpoint PLAINTEXT_HOST. Endpoint is now READY. (org.apache.kafka.server.network.EndpointReadyFutures)
+kafka-1             | [2026-09-23 15:53:23,651] INFO [SocketServer listenerType=BROKER, nodeId=1] Enabling request processing. (kafka.network.SocketServer)
+kafka-1             | [2026-09-23 15:53:23,651] INFO Awaiting socket connections on 0.0.0.0:19092. (kafka.network.DataPlaneAcceptor)
+kafka-1             | [2026-09-23 15:53:23,652] INFO Awaiting socket connections on 0.0.0.0:9092. (kafka.network.DataPlaneAcceptor)
+kafka-1             | [2026-09-23 15:53:23,654] INFO [BrokerServer id=1] Waiting for all of the authorizer futures to be completed (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,654] INFO [BrokerServer id=1] Finished waiting for all of the authorizer futures to be completed (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,654] INFO [BrokerServer id=1] Waiting for all of the SocketServer Acceptors to be started (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,654] INFO [BrokerServer id=1] Finished waiting for all of the SocketServer Acceptors to be started (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,654] INFO [BrokerServer id=1] Transition from STARTING to STARTED (kafka.server.BrokerServer)
+kafka-1             | [2026-09-23 15:53:23,655] INFO Kafka version: 4.3.1 (org.apache.kafka.common.utils.AppInfoParser)
+kafka-1             | [2026-09-23 15:53:23,655] INFO Kafka commitId: 26b251a451ce941d (org.apache.kafka.common.utils.AppInfoParser)
+kafka-1             | [2026-09-23 15:53:23,655] INFO Kafka startTimeMs: 1790178803654 (org.apache.kafka.common.utils.AppInfoParser)
+kafka-1             | [2026-09-23 15:53:23,655] INFO [KafkaRaftServer nodeId=1] Kafka Server started (kafka.server.KafkaRaftServer)
+kafka-1             | [2026-09-23 15:53:32,882] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(sales.raw-2, sales.raw-0, sales.raw-1) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:32,888] INFO [LogLoader partition=sales.raw-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:32,890] INFO Created log for partition sales.raw-2 in /var/lib/kafka/data/sales.raw-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:32,891] INFO [Partition sales.raw-2 broker=1] No checkpointed highwatermark is found for partition sales.raw-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:32,892] INFO [Partition sales.raw-2 broker=1] Log loaded for partition sales.raw-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:32,903] INFO [LogLoader partition=sales.raw-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:32,904] INFO Created log for partition sales.raw-0 in /var/lib/kafka/data/sales.raw-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:32,904] INFO [Partition sales.raw-0 broker=1] No checkpointed highwatermark is found for partition sales.raw-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:32,904] INFO [Partition sales.raw-0 broker=1] Log loaded for partition sales.raw-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:32,911] INFO [LogLoader partition=sales.raw-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:32,911] INFO Created log for partition sales.raw-1 in /var/lib/kafka/data/sales.raw-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:32,911] INFO [Partition sales.raw-1 broker=1] No checkpointed highwatermark is found for partition sales.raw-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:32,911] INFO [Partition sales.raw-1 broker=1] Log loaded for partition sales.raw-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,014] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(customers.raw-0, customers.raw-2, customers.raw-1) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:35,016] INFO [LogLoader partition=customers.raw-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:35,016] INFO Created log for partition customers.raw-0 in /var/lib/kafka/data/customers.raw-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:35,016] INFO [Partition customers.raw-0 broker=1] No checkpointed highwatermark is found for partition customers.raw-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,016] INFO [Partition customers.raw-0 broker=1] Log loaded for partition customers.raw-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,027] INFO [LogLoader partition=customers.raw-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:35,027] INFO Created log for partition customers.raw-2 in /var/lib/kafka/data/customers.raw-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:35,027] INFO [Partition customers.raw-2 broker=1] No checkpointed highwatermark is found for partition customers.raw-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,027] INFO [Partition customers.raw-2 broker=1] Log loaded for partition customers.raw-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,038] INFO [LogLoader partition=customers.raw-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:35,038] INFO Created log for partition customers.raw-1 in /var/lib/kafka/data/customers.raw-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:35,039] INFO [Partition customers.raw-1 broker=1] No checkpointed highwatermark is found for partition customers.raw-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:35,039] INFO [Partition customers.raw-1 broker=1] Log loaded for partition customers.raw-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,135] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(catalog.raw-2, catalog.raw-1, catalog.raw-0) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:37,136] INFO [LogLoader partition=catalog.raw-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:37,137] INFO Created log for partition catalog.raw-2 in /var/lib/kafka/data/catalog.raw-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:37,137] INFO [Partition catalog.raw-2 broker=1] No checkpointed highwatermark is found for partition catalog.raw-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,137] INFO [Partition catalog.raw-2 broker=1] Log loaded for partition catalog.raw-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,152] INFO [LogLoader partition=catalog.raw-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:37,152] INFO Created log for partition catalog.raw-1 in /var/lib/kafka/data/catalog.raw-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:37,153] INFO [Partition catalog.raw-1 broker=1] No checkpointed highwatermark is found for partition catalog.raw-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,153] INFO [Partition catalog.raw-1 broker=1] Log loaded for partition catalog.raw-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,159] INFO [LogLoader partition=catalog.raw-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:37,160] INFO Created log for partition catalog.raw-0 in /var/lib/kafka/data/catalog.raw-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:37,160] INFO [Partition catalog.raw-0 broker=1] No checkpointed highwatermark is found for partition catalog.raw-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:37,160] INFO [Partition catalog.raw-0 broker=1] Log loaded for partition catalog.raw-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,302] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(opendata.raw-0, opendata.raw-1, opendata.raw-2) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:39,304] INFO [LogLoader partition=opendata.raw-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:39,305] INFO Created log for partition opendata.raw-0 in /var/lib/kafka/data/opendata.raw-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:39,314] INFO [Partition opendata.raw-0 broker=1] No checkpointed highwatermark is found for partition opendata.raw-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,314] INFO [Partition opendata.raw-0 broker=1] Log loaded for partition opendata.raw-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,320] INFO [LogLoader partition=opendata.raw-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:39,320] INFO Created log for partition opendata.raw-1 in /var/lib/kafka/data/opendata.raw-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:39,320] INFO [Partition opendata.raw-1 broker=1] No checkpointed highwatermark is found for partition opendata.raw-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,320] INFO [Partition opendata.raw-1 broker=1] Log loaded for partition opendata.raw-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,326] INFO [LogLoader partition=opendata.raw-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:39,327] INFO Created log for partition opendata.raw-2 in /var/lib/kafka/data/opendata.raw-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:39,327] INFO [Partition opendata.raw-2 broker=1] No checkpointed highwatermark is found for partition opendata.raw-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:39,327] INFO [Partition opendata.raw-2 broker=1] Log loaded for partition opendata.raw-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,444] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(application.logs-1, application.logs-2, application.logs-0) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:41,446] INFO [LogLoader partition=application.logs-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:41,446] INFO Created log for partition application.logs-1 in /var/lib/kafka/data/application.logs-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:41,447] INFO [Partition application.logs-1 broker=1] No checkpointed highwatermark is found for partition application.logs-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,447] INFO [Partition application.logs-1 broker=1] Log loaded for partition application.logs-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,461] INFO [LogLoader partition=application.logs-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:41,461] INFO Created log for partition application.logs-2 in /var/lib/kafka/data/application.logs-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:41,461] INFO [Partition application.logs-2 broker=1] No checkpointed highwatermark is found for partition application.logs-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,461] INFO [Partition application.logs-2 broker=1] Log loaded for partition application.logs-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,467] INFO [LogLoader partition=application.logs-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:41,468] INFO Created log for partition application.logs-0 in /var/lib/kafka/data/application.logs-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:41,468] INFO [Partition application.logs-0 broker=1] No checkpointed highwatermark is found for partition application.logs-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:41,468] INFO [Partition application.logs-0 broker=1] Log loaded for partition application.logs-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,588] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(web.logs.raw-0, web.logs.raw-2, web.logs.raw-1) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:43,590] INFO [LogLoader partition=web.logs.raw-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:43,590] INFO Created log for partition web.logs.raw-0 in /var/lib/kafka/data/web.logs.raw-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:43,590] INFO [Partition web.logs.raw-0 broker=1] No checkpointed highwatermark is found for partition web.logs.raw-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,591] INFO [Partition web.logs.raw-0 broker=1] Log loaded for partition web.logs.raw-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,606] INFO [LogLoader partition=web.logs.raw-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:43,606] INFO Created log for partition web.logs.raw-2 in /var/lib/kafka/data/web.logs.raw-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:43,606] INFO [Partition web.logs.raw-2 broker=1] No checkpointed highwatermark is found for partition web.logs.raw-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,606] INFO [Partition web.logs.raw-2 broker=1] Log loaded for partition web.logs.raw-2 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,613] INFO [LogLoader partition=web.logs.raw-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:43,613] INFO Created log for partition web.logs.raw-1 in /var/lib/kafka/data/web.logs.raw-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:43,613] INFO [Partition web.logs.raw-1 broker=1] No checkpointed highwatermark is found for partition web.logs.raw-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:43,613] INFO [Partition web.logs.raw-1 broker=1] Log loaded for partition web.logs.raw-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,841] INFO [ReplicaFetcherManager on broker 1] Removed fetcher for partitions Set(web.logs.dlq-1, web.logs.dlq-0, web.logs.dlq-2) (kafka.server.ReplicaFetcherManager)
+kafka-1             | [2026-09-23 15:53:45,854] INFO [LogLoader partition=web.logs.dlq-1, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:45,854] INFO Created log for partition web.logs.dlq-1 in /var/lib/kafka/data/web.logs.dlq-1 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:45,854] INFO [Partition web.logs.dlq-1 broker=1] No checkpointed highwatermark is found for partition web.logs.dlq-1 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,855] INFO [Partition web.logs.dlq-1 broker=1] Log loaded for partition web.logs.dlq-1 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,861] INFO [LogLoader partition=web.logs.dlq-0, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:45,862] INFO Created log for partition web.logs.dlq-0 in /var/lib/kafka/data/web.logs.dlq-0 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:45,862] INFO [Partition web.logs.dlq-0 broker=1] No checkpointed highwatermark is found for partition web.logs.dlq-0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,862] INFO [Partition web.logs.dlq-0 broker=1] Log loaded for partition web.logs.dlq-0 with initial high watermark 0 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,868] INFO [LogLoader partition=web.logs.dlq-2, dir=/var/lib/kafka/data] Loading producer state till offset 0 (org.apache.kafka.storage.internals.log.UnifiedLog)
+kafka-1             | [2026-09-23 15:53:45,869] INFO Created log for partition web.logs.dlq-2 in /var/lib/kafka/data/web.logs.dlq-2 with properties {} (kafka.log.LogManager)
+kafka-1             | [2026-09-23 15:53:45,869] INFO [Partition web.logs.dlq-2 broker=1] No checkpointed highwatermark is found for partition web.logs.dlq-2 (kafka.cluster.Partition)
+kafka-1             | [2026-09-23 15:53:45,869] INFO [Partition web.logs.dlq-2 broker=1] Log loaded for partition web.logs.dlq-2 with initial high watermark 0 (kafka.cluster.Partition)
+
+=== recent Spark driver logs ===
+--- spark-job-20260922-101543-08_web_logs_ml_kmeans.log ---
+JOB=08_web_logs_ml_kmeans.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:15:45 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:15:45 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:15:47 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081545-0008/events_1_app-20260922081545-0008.zstd. This is Unsupported
+ML_STAGE=read_path_daily
+ML_STAGE=cast_and_validate_features
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+WEB_ML_INPUT_ROWS=16
+WEB_ML_DISTINCT_FEATURE_ROWS=16
+ML_STAGE=assemble_features
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 10:>                                                         (0 + 1) / 1]
+System.Management.Automation.RemoteException
+WEB_ML_ASSEMBLED_ROWS=16
+ML_STAGE=standardize_features
+WEB_ML_SCALED_ROWS=16
+WEB_ML_K=3
+ML_STAGE=fit_kmeans
+ML_STAGE=predict
+[ML] Web path KMeans centers:
+cluster=0 center=[0.09007983 0.19391563 0.24845528 0.29580967 0.07483202]
+cluster=1 center=[-1.35957694  2.3916451   1.38915035  1.30244243 -1.35323485]
+cluster=2 center=[ 0.09217471 -1.13117926 -1.03053961 -1.13908719  0.13252066]
+ML_STAGE=write_iceberg
+WEB_ML_OUTPUT_ROWS=16
+WEB_ML_RUNTIME_OK
+[OK] iceberg.ml.web_path_clusters created.
+                                                                                
+--- spark-job-20260922-101521-07_delta_web_logs_to_iceberg.log ---
+JOB=07_delta_web_logs_to_iceberg.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:15:22 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:15:23 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:15:24 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081523-0007/events_1_app-20260922081523-0007.zstd. This is Unsupported
+26/09/22 08:15:27 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[Stage 2:>                                                         (0 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:==>                                                       (2 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:======>                                                   (6 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:===========>                                             (10 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=================>                                       (15 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=======================>                                 (21 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=============================>                           (26 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=====================================>                   (33 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:============================================>            (39 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 2:=======================================================> (49 + 1) / 50]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 4:=>                                                        (1 + 2) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:===============>                                         (14 + 1) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:==========================>                              (23 + 1) / 50]
+System.Management.Automation.RemoteException
+[Stage 4:=========================================>               (36 + 1) / 50]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 13:=============================>                            (1 + 1) / 2]
+System.Management.Automation.RemoteException
+[Stage 15:>                                                         (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 23:>                                                         (0 + 1) / 1]
+System.Management.Automation.RemoteException
+[OK] Silver Delta -> Iceberg Gold tables: events, traffic_hourly, path_daily, application_daily.
+                                                                                
+--- spark-job-20260922-101459-06_kafka_web_logs_to_delta.log ---
+JOB=06_kafka_web_logs_to_delta.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:15:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:15:01 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:15:02 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081501-0006/events_1_app-20260922081501-0006.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 3) / 3]
+System.Management.Automation.RemoteException
+[Stage 0:=======================================>                   (2 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 2:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 3:>                  (0 + 2) / 3][Stage 4:>                  (0 + 0) / 3]
+System.Management.Automation.RemoteException
+[Stage 3:============>      (2 + 1) / 3][Stage 4:>                  (0 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 4:===================>                                       (1 + 2) / 3]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 12:============>     (2 + 0) / 3][Stage 13:>                 (0 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 12:============>     (2 + 1) / 3][Stage 13:============>     (2 + 1) / 3]
+System.Management.Automation.RemoteException
+[QUALITY] web logs valid=820 invalid=0
+                                                                                
+26/09/22 08:15:15 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+System.Management.Automation.RemoteException
+[Stage 21:============>     (2 + 1) / 3][Stage 22:>                 (0 + 1) / 3]
+System.Management.Automation.RemoteException
+[Stage 22:===================>                                      (1 + 2) / 3]
+System.Management.Automation.RemoteException
+[Stage 25:>                                                         (0 + 2) / 2]
+System.Management.Automation.RemoteException
+[Stage 25:=============================>                            (1 + 1) / 2]
+System.Management.Automation.RemoteException
+[OK] Kafka web.logs.raw -> Bronze Parquet -> Silver Delta completed.
+                                                                                
+--- spark-job-20260922-101425-05_kafka_aux_to_parquet.log ---
+JOB=05_kafka_aux_to_parquet.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:14:27 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:14:28 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:14:29 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081427-0005/events_1_app-20260922081427-0005.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 3) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:======>                                                    (1 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:===================>                                       (3 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:=======================================>                   (6 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:====================================================>      (8 + 1) / 9]
+System.Management.Automation.RemoteException
+[KAFKA] auxiliary records read=107
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 3:>                                                          (0 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:======>                                                    (1 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:=============>                                             (2 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:===================>                                       (3 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:==========================>                                (4 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:=======================================>                   (6 + 2) / 9]
+System.Management.Automation.RemoteException
+[OK] customers/catalog/OpenData Kafka events landed in Bronze Parquet.
+                                                                                
+--- spark-job-20260922-101401-04_ml_kmeans.log ---
+JOB=04_ml_kmeans.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/22 08:14:03 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/22 08:14:04 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/22 08:14:05 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260922081404-0004/events_1_app-20260922081404-0004.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 1:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=========>                                                 (1 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 1:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 4:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 4:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 7:>                                                          (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=========>                                                 (1 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:===================>                                       (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=============================>                             (3 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 7:=================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 21:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 21:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 21:================================================>         (5 + 1) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 24:>                                                         (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 24:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 24:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 25:>                                                         (0 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 25:===================>                                      (2 + 2) / 6]
+System.Management.Automation.RemoteException
+[Stage 25:======================================>                   (4 + 2) / 6]
+System.Management.Automation.RemoteException
+[ML] KMeans cluster centers:
+[-0.15919696 -0.56151595 -0.58766194 -0.52336262]
+[ 0.22154191 -0.47633283  1.30253129 -0.42324806]
+[ 0.08959179  1.55649343 -0.14735472  1.43029938]
+[OK] ML predictions written to Parquet and Iceberg.
+                                                                                

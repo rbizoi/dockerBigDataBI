@@ -1,0 +1,33 @@
+﻿JOB=08_web_logs_ml_kmeans.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/23 16:10:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/23 16:10:53 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/23 16:10:54 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260923161052-0008/events_1_app-20260923161052-0008.zstd. This is Unsupported
+ML_STAGE=read_path_daily
+ML_STAGE=cast_and_validate_features
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 1) / 1]
+System.Management.Automation.RemoteException
+WEB_ML_INPUT_ROWS=16
+WEB_ML_DISTINCT_FEATURE_ROWS=16
+ML_STAGE=assemble_features
+WEB_ML_ASSEMBLED_ROWS=16
+ML_STAGE=standardize_features
+WEB_ML_SCALED_ROWS=16
+WEB_ML_K=3
+ML_STAGE=fit_kmeans
+ML_STAGE=predict
+[ML] Web path KMeans centers:
+cluster=0 center=[0.09007983 0.19391563 0.24845528 0.29580967 0.07483202]
+cluster=1 center=[-1.35957694  2.3916451   1.38915035  1.30244243 -1.35323485]
+cluster=2 center=[ 0.09217471 -1.13117926 -1.03053961 -1.13908719  0.13252066]
+ML_STAGE=write_iceberg
+WEB_ML_OUTPUT_ROWS=16
+WEB_ML_RUNTIME_OK
+[OK] iceberg.ml.web_path_clusters created.
+                                                                                

@@ -1,0 +1,36 @@
+﻿JOB=05_kafka_aux_to_parquet.py
+EXIT_CODE=0
+
+WARNING: Using incubator modules: jdk.incubator.vector
+26/09/23 16:09:35 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/23 16:09:36 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+26/09/23 16:09:37 WARN S3ABlockOutputStream: Application invoked the Syncable API against stream writing to spark-events/eventlog_v2_app-20260923160936-0005/events_1_app-20260923160936-0005.zstd. This is Unsupported
+System.Management.Automation.RemoteException
+[Stage 0:>                                                          (0 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:======>                                                    (1 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:===================>                                       (3 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 0:=======================================>                   (6 + 2) / 9]
+System.Management.Automation.RemoteException
+[KAFKA] auxiliary records read=107
+                                                                                
+System.Management.Automation.RemoteException
+[Stage 3:>                                                          (0 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:======>                                                    (1 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:===================>                                       (3 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:==========================>                                (4 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:=======================================>                   (6 + 2) / 9]
+System.Management.Automation.RemoteException
+[Stage 3:=============================================>             (7 + 2) / 9]
+System.Management.Automation.RemoteException
+[OK] customers/catalog/OpenData Kafka events landed in Bronze Parquet.
+                                                                                
