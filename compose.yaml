@@ -314,7 +314,7 @@ services:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.history.HistoryServer
     ports:
-      - "127.0.0.1:${SPARK_HISTORY_UI_PORT:-18083}:8083"
+      - "127.0.0.1:${SPARK_HISTORY_UI_PORT:-18083}:18080"
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-history',18080),3); s.close()"]
       interval: 5s

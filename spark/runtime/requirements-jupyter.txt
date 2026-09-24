@@ -1,1 +1,13 @@
 jupyterlab==4.4.10
+ipython-sql
+sql
+psycopg2
+cx_Oracle
+pydot
+pyyaml
+pyarrow
+colour
+matplotlib
+seaborn
+plotly
+pygraphviz
