@@ -59,7 +59,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.03 RustFS
 >> - RustFS S3 : `http://localhost:9000` 
->> - RustFS console : `http://localhost:9001`  <i><a href="http://localhost:9001">`http://localhost:9001`</a><br></i>
+>> - RustFS console : <i><a href="http://localhost:9001">`http://localhost:9001`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS01.png" width="256">
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS02.png" width="256">
@@ -98,7 +98,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.07 Airflow
 
-- Airflow : `http://localhost:8088`
+- Airflow : <i><a href="http://localhost:8088">`http://localhost:8088`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/AirFlow.png" width="512">
 
