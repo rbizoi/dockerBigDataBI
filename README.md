@@ -68,8 +68,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 - Iceberg REST : `http://localhost:8181`
 
 ### 04.05 Spark 
->> - Master UI (`8080`): `http://localhost:18080`
-<i><a href="[https://www.anaconda.com/docs/getting-started/anaconda/install#windows-installation](http://localhost:18080)">`http://localhost:18080`</a><br></i>
+>> - Master UI (`8080`): `http://localhost:18080`    <i><a href="http://localhost:18080">`http://localhost:18080`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512">
 
