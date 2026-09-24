@@ -69,10 +69,17 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.05 Spark 
 >> - Spark Master UI : `http://localhost:18080`
+
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512">
+
 >> - Workers : `http://localhost:18081`, `http://localhost:18082`
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512"> 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkWorker.png" width="512">
+
+>> - Jobs : `http://localhost:4040`
+
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkJobs.png" width="512">
+
 
 ### 04.06 Trino
 - Trino : `http://localhost:8085`
