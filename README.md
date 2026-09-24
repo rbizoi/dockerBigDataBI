@@ -104,8 +104,8 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 ### 04.08 Elasticsearch
 
-- Elasticsearch : `http://localhost:9200`
-- Kibana : `http://localhost:5601`
+- Elasticsearch : `http://localhost:9200` <i><a href="http://localhost:8888">`http://localhost:9200`</a><br></i>
+- Kibana : `http://localhost:5601` <i><a href="http://localhost:8888">`http://localhost:5601`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/elastic1.png" width="512">
 
