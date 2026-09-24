@@ -59,17 +59,39 @@ USER root
 # minor is discovered at runtime and later compared with the Airflow driver.
 RUN python3 -c "import sys; print('SPARK_PYTHON_OK=' + '.'.join(map(str, sys.version_info[:2])))"
 
+# Native build/runtime prerequisites for the requested notebook libraries.
+# - psycopg2 needs pg_config/libpq headers when pip builds from source.
+# - pygraphviz needs Graphviz headers, pkg-config and a C compiler.
+# The packages remain in the image so both Python modules keep their native
+# shared-library dependencies at notebook runtime.
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      build-essential \
+      graphviz \
+      libgraphviz-dev \
+      libpq-dev \
+      pkg-config \
+      python3-cairo \
+      python3-dev; \
+    rm -rf /var/lib/apt/lists/*; \
+    command -v pg_config; \
+    command -v dot; \
+    pkg-config --exists libgvc
+
 # Python dependencies required by the training ML jobs.
 # PySpark SQL can run without NumPy, but importing pyspark.ml requires it.
 COPY spark/runtime/requirements-ml.txt /tmp/requirements-ml.txt
 COPY spark/runtime/requirements-jupyter.txt /tmp/requirements-jupyter.txt
+COPY spark/runtime/validate_python_dependencies.py /tmp/validate_python_dependencies.py
 RUN set -eux; \
     python3 -m pip install --no-cache-dir -r /tmp/requirements-ml.txt; \
     python3 -m pip install --no-cache-dir -r /tmp/requirements-jupyter.txt; \
-    rm -f /tmp/requirements-ml.txt /tmp/requirements-jupyter.txt; \
     export PYTHONPATH="/opt/spark/python:$(echo /opt/spark/python/lib/py4j-*-src.zip)"; \
-    python3 -c "import jupyterlab, numpy as np; from pyspark.ml.clustering import KMeans; from pyspark.ml.feature import StandardScaler, VectorAssembler; print('SPARK_ML_JUPYTER_PYTHON_OK numpy=' + np.__version__ + ' jupyterlab=' + jupyterlab.__version__)"; \
-    python3 -m jupyter lab --version
+    python3 /tmp/validate_python_dependencies.py; \
+    python3 -m pip check; \
+    python3 -m jupyter lab --version; \
+    rm -f /tmp/requirements-ml.txt /tmp/requirements-jupyter.txt /tmp/validate_python_dependencies.py
 
 # The upstream Spark user has /nonexistent as its passwd home. Jupyter needs a
 # writable home/runtime tree, otherwise it exits before opening port 8888.
