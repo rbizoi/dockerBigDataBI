@@ -72,7 +72,8 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512">
 
->> - Workers (`8081`,`8082`): <i><a href="http://localhost:18081">`http://localhost:18081`</a><br></i>, <i><a href="http://localhost:18082">`http://localhost:18082`</a><br></i>
+>> - Workers (`8081`,`8082`): <i><a href="http://localhost:18081">`http://localhost:18081`</a><br></i>
+>>                            <i><a href="http://localhost:18082">`http://localhost:18082`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkWorker.png" width="512">
 
