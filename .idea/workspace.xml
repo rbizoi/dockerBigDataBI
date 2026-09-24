@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b76425c-3f5c-47b0-9a26-cfec275b4107" name="Changes" comment="rbi">
-      <change afterPath="$PROJECT_DIR$/data/ebrasil/olist_geolocation_dataset.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_customers_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_geolocation_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_order_items_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_order_payments_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_order_reviews_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_orders_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_products_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/olist_sellers_dataset.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/ebrasil/product_category_name_translation.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spark/runtime/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/spark/runtime/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spark/runtime/requirements-jupyter.txt" beforeDir="false" afterPath="$PROJECT_DIR$/spark/runtime/requirements-jupyter.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spark/runtime/requirements-ml.txt" beforeDir="false" afterPath="$PROJECT_DIR$/spark/runtime/requirements-ml.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +224,7 @@
       <workItem from="1790063581625" duration="627000" />
       <workItem from="1790065396893" duration="8000" />
       <workItem from="1790065501769" duration="15544000" />
-      <workItem from="1790235741163" duration="3795000" />
+      <workItem from="1790235741163" duration="5950000" />
     </task>
     <task id="LOCAL-00001" summary="rbi">
       <option name="closed" value="true" />
@@ -400,7 +394,15 @@
       <option name="project" value="LOCAL" />
       <updated>1790239133004</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="rbi">
+      <option name="closed" value="true" />
+      <created>1790239565774</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1790239565774</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
