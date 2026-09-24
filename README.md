@@ -68,27 +68,23 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 - Iceberg REST : `http://localhost:8181`
 
 ### 04.05 Spark 
->> - Master UI (`8080`): `http://localhost:18080`    <i><a href="http://localhost:18080">`http://localhost:18080`</a><br></i>
+>> - Master UI (`8080`): <i><a href="http://localhost:18080">`http://localhost:18080`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512">
 
->> - Workers (`8081`,`8082`): `http://localhost:18081`, `http://localhost:18082`
+>> - Workers (`8081`,`8082`): <i><a href="http://localhost:18081">`http://localhost:18081`</a><br></i>, <i><a href="http://localhost:18082">`http://localhost:18082`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkWorker.png" width="512">
 
->> - Jobs : `http://localhost:4040`
+>> - Jobs : <i><a href="http://localhost:4040">`http://localhost:4040`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkJobs.png" width="512">
 
->> - History Server (`18083`): `http://localhost:18083`
+>> - History Server (`18083`): <i><a href="http://localhost:18083">`http://localhost:18083`</a><br></i> 
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkHistoryServer.png" width="512">
 
->> - History Server (`18083`): `http://localhost:18083`
-
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkHistoryServer.png" width="512">
-
->> - Jupyter Lab PySpark (`8888`): `http://localhost:8888`
+>> - Jupyter Lab PySpark (`8888`): <i><a href="http://localhost:8888">`http://localhost:8888`</a><br></i>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/JupyterLab.png" width="512">
 
