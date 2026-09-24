@@ -7,7 +7,7 @@
 Les données sont divisées en plusieurs ensembles de données pour une meilleure compréhension et une meilleure organisation.<br>
 Veuillez vous référer au schéma de données suivant lorsque vous travaillez avec:<br>
 
->> data/ebrasil<br>
+>> `data/ebrasil`<br>
         >> - olist_customers_dataset.csv<br>
         >> - olist_geolocation_dataset.csv<br>
         >> - olist_orders_dataset.csv<br>
