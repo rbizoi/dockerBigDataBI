@@ -1,43 +1,18 @@
 # Observation météorologique historiques France
 
 >> `/data/meteo`<br>
-        >> `synop.202301.csv`<br>
-        >> `synop.202302.csv`<br>
-        >> `synop.202303.csv`<br>
-        >> `synop.202304.csv`<br>
-        >> `synop.202305.csv`<br>
-        >> `synop.202306.csv`<br>
-        >> `synop.202307.csv`<br>
-        >> `synop.202308.csv`<br>
-        >> `synop.202309.csv`<br>
-        >> `synop.202310.csv`<br>
-        >> `synop.202311.csv`<br>
-        >> `synop.202312.csv`<br>
-        >> `synop.202401.csv`<br>
-        >> `synop.202402.csv`<br>
-        >> `synop.202403.csv`<br>
-        >> `synop.202404.csv`<br>
-        >> `synop.202405.csv`<br>
-        >> `synop.202406.csv`<br>
-        >> `synop.202407.csv`<br>
-        >> `synop.202408.csv`<br>
-        >> `synop.202409.csv`<br>
-        >> `synop.202410.csv`<br>
-        >> `synop.202411.csv`<br>
-        >> `synop.202412.csv`<br>
-        >> `synop.202501.csv`<br>
-        >> `synop.202502.csv`<br>
-        >> `synop.202503.csv`<br>
-        >> `synop.202504.csv`<br>
-        >> `synop.202505.csv`<br>
-        >> `synop.202506.csv`<br>
-        >> `synop.202507.csv`<br>
-        >> `synop.202508.csv`<br>
-        >> `synop.202509.csv`<br>
-        >> `synop.202510.csv`<br>
-        >> `synop.202511.csv`<br>
-        >> `synop.202512.csv`<br>
-
+        >> `synop.202301.csv` `synop.202401.csv` `synop.202501.csv`<br>
+        >> `synop.202302.csv` `synop.202402.csv` `synop.202502.csv`<br>
+        >> `synop.202303.csv` `synop.202403.csv` `synop.202503.csv`<br>
+        >> `synop.202304.csv` `synop.202404.csv` `synop.202504.csv`<br>
+        >> `synop.202305.csv` `synop.202405.csv` `synop.202505.csv`<br>
+        >> `synop.202306.csv` `synop.202406.csv` `synop.202506.csv`<br>
+        >> `synop.202307.csv` `synop.202407.csv` `synop.202507.csv`<br>
+        >> `synop.202308.csv` `synop.202408.csv` `synop.202508.csv`<br>
+        >> `synop.202309.csv` `synop.202409.csv` `synop.202509.csv`<br>
+        >> `synop.202310.csv` `synop.202410.csv` `synop.202510.csv`<br>
+        >> `synop.202311.csv` `synop.202411.csv` `synop.202511.csv`<br>
+        >> `synop.202312.csv` `synop.202412.csv` `synop.202512.csv`<br>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="512">
 
