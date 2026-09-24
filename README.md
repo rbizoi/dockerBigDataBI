@@ -88,6 +88,8 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 >> - Jupyter Lab PySpark (`8888`): <i><a href="http://localhost:8888">`http://localhost:8888`</a><br></i>
 
+>> Token `3125f8dff8124bc9aa9ffc6cb9bab535`
+
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/JupyterLab.png" width="512">
 
 
