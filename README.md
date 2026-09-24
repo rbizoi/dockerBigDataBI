@@ -21,6 +21,7 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 - PowerShell 5.1 : capture locale de `stderr` des commandes natives sans transformer les warnings JVM en échecs ;
 - le fichier temporaire de version Spark utilisé au build Airflow appartient à `airflow`, ce qui évite un échec final `Operation not permitted` lors du nettoyage de `/tmp` ;
 - le driver Spark exécuté dans Airflow reçoit explicitement le client HTTP AWS SDK v2 `url-connection-client` requis par Iceberg S3FileIO ;
+- l'interface temps réel du driver Jupyter est publiée par le service `spark-jupyter` sur `http://localhost:4040` ;
 - Kibana dispose d'un heap Node.js de 1 Go dans un conteneur limité à 1,5 Go, et l'installateur détecte explicitement un épuisement du heap pendant son démarrage ;
 - l'événement de validation Elastic est envoyé comme un JSON correctement terminé, puis recherché par une requête term exacte dans les index training-logs-* ;
 - succès final uniquement après un vrai smoke test Parquet + Delta + Iceberg et des requêtes Trino.

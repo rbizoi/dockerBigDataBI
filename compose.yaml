@@ -239,7 +239,6 @@ services:
       - "8080"
     ports:
       - "127.0.0.1:${SPARK_MASTER_UI_PORT:-18080}:8080"
-      - "127.0.0.1:${SPARK_JOBS_UI_PORT:-14040}:14040"
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-master',7077),3); s.close()"]
       interval: 5s
@@ -350,7 +349,7 @@ services:
       SPARK_MASTER_URL: spark://spark-master:7077
       PYSPARK_PYTHON: python3
       PYSPARK_DRIVER_PYTHON: python3
-      PYSPARK_SUBMIT_ARGS: --master spark://spark-master:7077 --conf spark.driver.host=spark-jupyter --conf spark.driver.bindAddress=0.0.0.0 --conf spark.ui.enabled=true --conf spark.ui.port=14040 pyspark-shell
+      PYSPARK_SUBMIT_ARGS: --master spark://spark-master:7077 --conf spark.driver.host=spark-jupyter --conf spark.driver.bindAddress=0.0.0.0 --conf spark.ui.enabled=true --conf spark.ui.port=4040 pyspark-shell
       JUPYTER_TOKEN: ${JUPYTER_TOKEN:-CHANGE_ME}
     command:
       - python3
@@ -365,6 +364,7 @@ services:
       - --ServerApp.password=
     ports:
       - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
+      - "127.0.0.1:${SPARK_JOBS_UI_PORT:-4040}:4040"
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('127.0.0.1',8888),3); s.close()"]
       interval: 5s

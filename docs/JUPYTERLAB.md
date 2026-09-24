@@ -51,6 +51,34 @@ Les notebooks sont stockés dans `spark/notebooks` sur Windows. Ils survivent à
 la recréation du conteneur. Les données d'exemple sont disponibles en lecture
 dans `/opt/spark/data`; les résultats Lakehouse doivent être écrits dans S3.
 
+## Interface Spark Jobs — port 4040
+
+L'interface des jobs appartient au processus driver. Dans les notebooks, ce
+driver s'exécute dans `spark-jupyter`; le port doit donc être publié par ce
+service et non par `spark-master`.
+
+1. ouvrez JupyterLab avec `OPEN_JUPYTER.cmd` ;
+2. exécutez la cellule qui crée la `SparkSession` ;
+3. lancez `OPEN_SPARK_JOBS.cmd`.
+
+L'URL Windows est :
+
+```text
+http://127.0.0.1:4040
+```
+
+Le lien interne éventuellement renvoyé par Spark, par exemple
+`http://spark-jupyter:4040`, n'est résolu que dans le réseau Docker. Depuis le
+navigateur Windows, utilisez toujours `127.0.0.1` et le port défini par
+`SPARK_JOBS_UI_PORT` dans `.env`.
+
+L'interface 4040 n'existe que pendant la vie de la `SparkSession`. Pour les
+applications terminées, utilisez le History Server :
+
+```text
+http://127.0.0.1:18083
+```
+
 ## Shells Spark
 
 PySpark :
@@ -81,6 +109,9 @@ docker compose exec spark-jupyter python3 -c "import jupyterlab, pyspark; print(
 
 Si le port 8888 est déjà utilisé, changez `JUPYTER_PORT` dans `.env`, puis
 relancez `docker compose up -d --force-recreate spark-jupyter`.
+
+Si le port 4040 est déjà utilisé, changez `SPARK_JOBS_UI_PORT` dans `.env`,
+puis recréez `spark-jupyter`. Le port interne reste toujours 4040.
 
 Si une ancienne image affiche `PermissionError: /nonexistent`, reconstruisez
 obligatoirement l'image puis recréez le service :

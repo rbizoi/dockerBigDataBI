@@ -64,6 +64,8 @@ try {
     }
     $jupyterPortMatch = [regex]::Match($envText, '(?m)^JUPYTER_PORT=(.*)$')
     $jupyterPort = if ($jupyterPortMatch.Success -and -not [string]::IsNullOrWhiteSpace($jupyterPortMatch.Groups[1].Value)) { $jupyterPortMatch.Groups[1].Value.Trim() } else { '8888' }
+    $sparkJobsPortMatch = [regex]::Match($envText, '(?m)^SPARK_JOBS_UI_PORT=(.*)$')
+    $sparkJobsPort = if ($sparkJobsPortMatch.Success -and -not [string]::IsNullOrWhiteSpace($sparkJobsPortMatch.Groups[1].Value)) { $sparkJobsPortMatch.Groups[1].Value.Trim() } else { '4040' }
 
     [void](Assert-NativeSuccess -Description 'docker compose config' -Command { docker compose config --quiet } -Quiet)
 
@@ -130,6 +132,12 @@ try {
         throw ('JupyterLab Spark runtime validation failed: ' + $jupyterRuntime.Text)
     }
     Write-Ok 'JupyterLab user, write permissions and PySpark runtime validated'
+
+    $sparkJobsMapping = Assert-NativeSuccess -Description 'Validate Spark Jobs UI port mapping' -Command { docker compose port spark-jupyter 4040 } -Quiet
+    if ($sparkJobsMapping.Text.Trim() -notmatch (':' + [regex]::Escape($sparkJobsPort) + '$')) {
+        throw ('Spark Jobs UI mapping is invalid. Expected localhost:' + $sparkJobsPort + ' -> spark-jupyter:4040, got: ' + $sparkJobsMapping.Text.Trim())
+    }
+    Write-Ok ('Spark Jobs UI mapping validated: http://127.0.0.1:' + $sparkJobsPort + ' (available while a Jupyter SparkSession is active)')
 
     Write-Section '8. Spark runtime smoke: S3 + Parquet + Delta + Iceberg'
     [void](Invoke-SparkJob -JobName '00_runtime_smoke.py' -RequiredMarkers @('SPARK_IMPORTED_CONFIG_OK','SMOKE_PARQUET_COUNT=3','SMOKE_DELTA_COUNT=3','SMOKE_ICEBERG_COUNT=3','SMOKE_RUNTIME_OK'))

@@ -17,6 +17,7 @@ Consolidated distribution: no intermediate repair/hotfix artifacts are included.
 - Jupyter runtime/config/cache directories are explicitly writable by the `spark` user; the upstream `/nonexistent` home is never used.
 - Jupyter's ordinary Python process receives Spark's bundled PySpark and Py4J sources through a stable build-time alias and an explicit `PYTHONPATH`.
 - Compose explicitly runs Jupyter as `spark`; recursive home ownership and real write probes prevent false-positive readiness.
+- The live Spark Jobs UI is published by the actual Jupyter driver container on configurable localhost port 4040; the master no longer owns the incorrect mapping.
 
 - `docs/AIRFLOW_ICEBERG_S3_FIX.md` - Airflow Spark driver / Iceberg S3 AWS HTTP client correction.
 - `docs/KIBANA_MEMORY_FIX.md` - Kibana Node.js heap correction and readiness diagnostics.
@@ -26,3 +27,4 @@ Consolidated distribution: no intermediate repair/hotfix artifacts are included.
 - `docs/JUPYTER_HOME_FIX.md` - root cause and correction for the Jupyter restart loop.
 - `docs/JUPYTER_PYSPARK_PATH_FIX.md` - PySpark/Py4J import-path correction for Jupyter kernels.
 - `docs/JUPYTER_OWNERSHIP_FIX.md` - recursive home ownership and notebook save validation.
+- `docs/SPARK_JOBS_UI_FIX.md` - root cause, corrected port ownership and live-session access procedure.

@@ -174,14 +174,19 @@ for worker_name in ["spark-worker-1", "spark-worker-2"]:
 
 jupyter = services["spark-jupyter"]
 jupyter_env = jupyter.get("environment", {}) or {}
+master_ports = services["spark-master"].get("ports", []) or []
 check(not jupyter.get("profiles"), "JupyterLab is included in the standard installation")
 check(str(jupyter.get("user")) == "spark", "Compose explicitly runs JupyterLab as the non-root spark user")
 check(any("JUPYTER_PORT" in str(p) and "8888" in str(p) for p in jupyter.get("ports", [])), "JupyterLab UI is published on configurable localhost port 8888")
+check(any("SPARK_JOBS_UI_PORT" in str(p) and "4040" in str(p) for p in jupyter.get("ports", [])), "Spark Jobs UI is published by spark-jupyter on configurable localhost port 4040")
+check(not any("SPARK_JOBS_UI_PORT" in str(p) or str(p).endswith(":4040") or str(p).endswith(":14040") for p in master_ports), "Spark master does not own the Jupyter driver's live UI port")
 check(jupyter_env.get("SPARK_MASTER_URL") == "spark://spark-master:7077", "JupyterLab targets the Spark Standalone master")
 check("spark.driver.host=spark-jupyter" in str(jupyter_env.get("PYSPARK_SUBMIT_ARGS", "")), "Jupyter PySpark driver advertises its Compose hostname")
+check("spark.ui.enabled=true" in str(jupyter_env.get("PYSPARK_SUBMIT_ARGS", "")) and "spark.ui.port=4040" in str(jupyter_env.get("PYSPARK_SUBMIT_ARGS", "")), "Jupyter driver explicitly enables its live UI on internal port 4040")
 check(jupyter_env.get("PYSPARK_PYTHON") == "python3" and jupyter_env.get("PYSPARK_DRIVER_PYTHON") == "python3", "Jupyter driver and Spark workers use Python 3")
 check(any("./spark/notebooks:/opt/spark/notebooks" in str(v) for v in jupyter.get("volumes", [])), "Jupyter notebooks are persisted with a host bind mount")
 check("CHANGE_ME" in read(".env.example") and "JUPYTER_TOKEN" in read(".env.example"), "Jupyter token placeholder is declared for first-run generation")
+check("SPARK_JOBS_UI_PORT=4040" in read(".env.example"), "Spark Jobs UI host port is declared in .env.example")
 check(jupyter_env.get("HOME") == "/home/spark" and jupyter_env.get("JUPYTER_RUNTIME_DIR") == "/home/spark/.local/share/jupyter/runtime", "Jupyter uses an explicit writable Spark home and runtime directory")
 check(jupyter_env.get("JUPYTER_DATA_DIR") == "/home/spark/.local/share/jupyter", "Jupyter data directory is explicit and inside the Spark home")
 check(jupyter_env.get("PYTHONPATH") == "/opt/spark/python:/opt/spark/python/lib/py4j-src.zip", "Jupyter receives Spark's bundled PySpark and stable Py4J paths")
@@ -219,8 +224,11 @@ ml_req = read("spark/runtime/requirements-ml.txt")
 check(any(line.strip() == "numpy" for line in ml_req.splitlines()), "Spark ML Python requirements include NumPy without an exact version gate")
 check("python3 -m pip install --no-cache-dir -r /tmp/requirements-ml.txt" in spark_df, "Spark image installs ML Python requirements")
 check("python3 -m pip install --no-cache-dir -r /tmp/requirements-jupyter.txt" in spark_df, "Spark image installs JupyterLab requirements")
-check(read("spark/runtime/requirements-jupyter.txt").strip() == "jupyterlab==4.4.10", "JupyterLab dependency is exactly pinned")
+jupyter_req = read("spark/runtime/requirements-jupyter.txt")
+check(any(line.strip() == "jupyterlab==4.4.10" for line in jupyter_req.splitlines()), "JupyterLab dependency is exactly pinned")
 check("python3 -m jupyter lab --version" in spark_df, "Spark image validates the JupyterLab executable at build time")
+check("python3-cairo" in spark_df and '"cairo"' in read("spark/runtime/validate_python_dependencies.py"), "Spark image satisfies and imports PyGObject's pycairo dependency")
+check("validate_python_dependencies.py" in spark_df and "python3 -m pip check" in spark_df, "Spark image validates requested Python imports and dependency consistency")
 check("install -d -m 0755 -o spark -g spark /home/spark" in spark_df and "chown -R spark:spark /home/spark" in spark_df, "Spark image recursively assigns the complete Jupyter home to spark")
 check("find /home/spark \\( ! -user spark -o ! -group spark \\) -print -quit" in spark_df and "chmod 0700" in spark_df, "Spark image verifies ownership and private permissions for all Jupyter home paths")
 check("ENV HOME=/home/spark" in spark_df and "JUPYTER_RUNTIME_DIR=/home/spark/.local/share/jupyter/runtime" in spark_df, "Spark image exports writable Jupyter/XDG paths")
@@ -417,6 +425,7 @@ check("INSTALLATION VALIDATED SUCCESSFULLY" in installer, "installer has explici
 check("Test-CoreFunctional" in installer and "SMOKE_RUNTIME_OK" in installer, "installer gates success on functional core and Spark smoke")
 check("spark-history" in installer and "api/v1/applications?limit=1" in installer and "Spark S3 event log visible in History Server" in installer, "installer validates Spark History Server and S3 event logs")
 check("spark-jupyter" in installer and "Wait-ServiceHealthy 'spark-jupyter'" in installer and "JupyterLab user, write permissions and PySpark runtime validated" in installer, "installer starts and validates JupyterLab")
+check("docker compose port spark-jupyter 4040" in installer and "Spark Jobs UI mapping validated" in installer, "installer validates the Spark Jobs UI mapping on the driver service")
 check("-Service 'kibana'" in installer and "JavaScript heap out of memory" in ps_text, "installer detects Kibana heap exhaustion during HTTP readiness")
 check("$json | docker compose exec -T kafka /opt/kafka/bin/kafka-console-producer.sh" in installer, "Elastic validation JSON is piped directly to the Kafka producer")
 check("$producerCommand" not in installer and "/bin/bash -lc $producerCommand" not in installer, "Elastic validation avoids nested PowerShell/Bash JSON quoting")
@@ -438,7 +447,7 @@ for line in read("CHECKSUMS_SHA256.txt").splitlines():
 checksum_files = {
     p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
     for p in ROOT.rglob("*")
-    if p.is_file() and p.name != "CHECKSUMS_SHA256.txt"
+    if p.is_file() and p.name != "CHECKSUMS_SHA256.txt" and ".git" not in p.relative_to(ROOT).parts
 }
 check(checksum_entries == checksum_files, "SHA-256 manifest covers every distribution file exactly")
 
@@ -447,6 +456,10 @@ notebook_source = "\n".join("".join(cell.get("source", [])) for cell in notebook
 check(notebook.get("nbformat") == 4 and len(notebook.get("cells", [])) >= 3, "starter Jupyter notebook is valid nbformat 4")
 check("SparkSession.builder" in notebook_source and "spark.range" in notebook_source, "starter notebook creates and exercises a distributed Spark session")
 check("OPEN_JUPYTER.cmd" in {p.name for p in ROOT.glob("*.cmd")}, "Windows Jupyter launcher is included")
+check("spark.sparkContext.uiWebUrl" in notebook_source and "http://127.0.0.1:4040" in notebook_source, "starter notebook reports both internal and Windows Spark UI addresses")
+spark_jobs_launcher = read("OPEN_SPARK_JOBS.cmd")
+check("spark-jupyter" in spark_jobs_launcher and "127.0.0.1:%SPARK_JOBS_UI_PORT_VALUE%" in spark_jobs_launcher and "connect_ex(('127.0.0.1',4040))" in spark_jobs_launcher, "Windows Spark Jobs launcher validates an active driver UI before opening it")
+check("jupiter.olimp.fr" not in spark_tree_text and "spark-jupyter:14040" not in spark_tree_text, "notebooks contain no obsolete or Docker-internal Spark UI browser links")
 
 # ---------------------------------------------------------------------------
 # Unit test of objectstore bootstrap without network

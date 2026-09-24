@@ -1,6 +1,6 @@
-Static validation — COMPLETE_STABLE_FIXED9_SPARKCFG_JUPYTER
+Static validation — COMPLETE_STABLE_FIXED13_SPARK_JOBS_UI
 
-Result: 0 error(s), 1 warning(s), 198 passed checks
+Result: 0 error(s), 1 warning(s), 208 passed checks
 
 Validated contracts include:
 - Compose YAML and the exact 25-service topology
@@ -15,6 +15,9 @@ Validated contracts include:
 - writable `/home/spark` and explicit Jupyter/XDG runtime paths
 - explicit PySpark/Py4J `PYTHONPATH` and a build-tested stable Py4J alias
 - explicit non-root `spark` user, recursive ownership and real notebook writes
+- Spark Jobs UI owned by `spark-jupyter` and published on configurable localhost port 4040
+- installer and Windows launcher checks for the live Spark Jobs mapping/session
+- no obsolete Spark UI hostnames in the notebooks
 - Python, Bash and PowerShell 5.1 structural syntax
 - Kafka, PostgreSQL, object-store, Trino, Airflow and Elastic contracts
 - training datasets and Spark jobs
