@@ -84,7 +84,14 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkHistoryServer.png" width="512">
 
- 
+>> - History Server (`18083`): `http://localhost:18083`
+
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkHistoryServer.png" width="512">
+
+>> - Jupyter Lab PySpark (`8888`): `http://localhost:8888`
+
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/JupyterLab.png" width="512">
+
 
 ### 04.06 Trino
 - Trino : `http://localhost:8085`
