@@ -35,9 +35,6 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/ebrasil.png" width="512">
 
-
->> 
-
 # <div style='padding:15px;color:#030aa7;font-size:240%;text-align: center;font-style: italic;font-weight: bold;font-family: Georgia, serif'><a href="https://www.kaggle.com/datasets/eliasdabbas/web-server-access-logs/data">Analyse exploratoire des logs d’un serveur Web</a></div>
 
 >> `/data/log_web_access`<br>
@@ -54,6 +51,3 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
              <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/demarche_log.png" width="256"></th>
         </tr>    
 </table>
-
-
->> https://www.kaggle.com/datasets/eliasdabbas/web-server-access-logs
