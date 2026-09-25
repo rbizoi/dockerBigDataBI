@@ -16,7 +16,8 @@
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="512">
 
-# Brazilian E-Commerce Public Dataset by Olist
+ 
+# <div style='padding:15px;color:#030aa7;font-size:240%;text-align: center;font-style: italic;font-weight: bold;font-family: Georgia, serif'><a href="https://www.kaggle.com/olistbr/brazilian-ecommerce/data">Brazilian E-Commerce Public Dataset by Olist</a></div>
 
 Les données sont divisées en plusieurs ensembles de données pour une meilleure compréhension et une meilleure organisation.<br>
 Veuillez vous référer au schéma de données suivant lorsque vous travaillez avec:<br>
@@ -35,7 +36,7 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/ebrasil.png" width="512">
 
 
->> https://www.kaggle.com/olistbr/brazilian-ecommerce
+>> 
 
 # <div style='padding:15px;color:#030aa7;font-size:240%;text-align: center;font-style: italic;font-weight: bold;font-family: Georgia, serif'><a href="https://www.kaggle.com/datasets/eliasdabbas/web-server-access-logs/data">Analyse exploratoire des logs d’un serveur Web</a></div>
 
