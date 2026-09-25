@@ -23,16 +23,30 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
 
 >> `data/ebrasil`<br>
         >> - `olist_customers_dataset.csv`<br>
-        >> - `olist_geolocation_dataset.csv`<br>
-        >> - `olist_orders_dataset.csv`<br>
-        >> - `olist_order_items_dataset.csv`<br>
-        >> - `olist_order_payments_dataset.csv`<br>
-        >> - `olist_order_reviews_dataset.csv`<br>
-        >> - `olist_products_dataset.csv`<br>
-        >> - `olist_sellers_dataset.csv`<br>
-        >> - `product_category_name_translation.csv`<br>
+        >>   - `olist_geolocation_dataset.csv`<br>
+        >>   - `olist_orders_dataset.csv`<br>
+        >>   - `olist_order_items_dataset.csv`<br>
+        >>   - `olist_order_payments_dataset.csv`<br>
+        >>   - `olist_order_reviews_dataset.csv`<br>
+        >>   - `olist_products_dataset.csv`<br>
+        >>   - `olist_sellers_dataset.csv`<br>
+        >>   - `product_category_name_translation.csv`<br>
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/ebrasil.png" width="512">
 
 
 >> https://www.kaggle.com/olistbr/brazilian-ecommerce
+
+# Web Server Access Logs
+
+>> `/data/log_web_access`<br>
+        >> `access_01.log`   `access_06.log`<br>
+        >> `access_02.log`   `access_07.log`<br>
+        >> `access_03.log`   `access_08.log`<br>
+        >> `access_04.log`   `access_09.log`<br>
+        >> `access_05.log`   `access_10.log`<br>
+
+
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/log_web_server.png" width="512">
+
+>> https://www.kaggle.com/datasets/eliasdabbas/web-server-access-logs
