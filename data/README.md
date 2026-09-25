@@ -50,7 +50,7 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
 <table>
         <tr>                                                                                   
              <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/log_web_server.png" width="512"></th>
-             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/demarche_log.png" width="512"></th>
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/demarche_log.png" width="256"></th>
         </tr>    
 </table>
 
