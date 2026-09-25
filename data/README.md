@@ -47,6 +47,15 @@ Veuillez vous référer au schéma de données suivant lorsque vous travaillez a
         >> `access_05.log`   `access_10.log`<br>
 
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/log_web_server.png" width="512">
+<table>
+        <tr>                                                                                   
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/log_web_server.png" width="512"></th>
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/demarche_log.png" width="512"></th>
+        </tr>    
+</table>
+
+
+
+
 
 >> https://www.kaggle.com/datasets/eliasdabbas/web-server-access-logs
