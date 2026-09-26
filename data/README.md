@@ -14,7 +14,12 @@
         >> `synop.202311.csv` `synop.202411.csv` `synop.202511.csv`<br>
         >> `synop.202312.csv` `synop.202412.csv` `synop.202512.csv`<br>
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="512">
+<table>
+        <tr>                                                                                   
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="512"></th>
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/analyse_meteoFrance.png" width="512"></th>
+        </tr>    
+</table>
 
  
 # <div style='padding:15px;color:#030aa7;font-size:240%;text-align: center;font-style: italic;font-weight: bold;font-family: Georgia, serif'><a href="https://www.kaggle.com/olistbr/brazilian-ecommerce/data">Brazilian E-Commerce Public Dataset by Olist</a></div>
