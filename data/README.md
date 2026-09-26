@@ -17,7 +17,7 @@
 <table>
         <tr>                                                                                   
              <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/analyse_meteoFrance.png" width="1024"></th>
-             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="512"></th>
+             <th><img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/meteoFrance.png" width="256"></th>
         </tr>    
 </table>
 
