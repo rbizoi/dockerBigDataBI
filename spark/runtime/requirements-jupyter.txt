@@ -17,3 +17,4 @@ user-agents
 geoip2
 ipaddress
 advertools
+squarify
