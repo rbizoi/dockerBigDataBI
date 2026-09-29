@@ -2,4 +2,4 @@
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/bi/comment_choisir.png" width="1024">
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/bi/Synthese_graphiques_BI" width="1024">
+<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/bi/Synthese_graphiques_BI.png" width="1024">
