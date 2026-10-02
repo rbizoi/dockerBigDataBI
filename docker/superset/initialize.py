@@ -5,9 +5,11 @@ from urllib.parse import quote_plus
 subprocess.run(['superset', 'db', 'upgrade'], check=True)
 from superset.app import create_app
 from superset import db, security_manager
-from superset.models.core import Database
 app = create_app()
 with app.app_context():
+    # Superset model imports access current_app.config at import time.
+    from superset.models.core import Database
+
     user = os.environ['SUPERSET_ADMIN_USER']
     if not security_manager.find_user(username=user):
         role = security_manager.find_role('Admin') or security_manager.add_role('Admin')

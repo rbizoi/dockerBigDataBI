@@ -16,6 +16,6 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install PyYAML boto3 pytest
       - run: python tools/static_validate.py
-      - run: python -m pytest -q tests/test_objectstore_init.py
+      - run: python -m pytest -q tests
       - if: runner.os == 'Linux'
         run: docker compose --profile full --profile checks config --quiet
