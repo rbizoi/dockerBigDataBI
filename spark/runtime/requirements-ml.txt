@@ -11,3 +11,5 @@ catboost
 optuna
 kneed
 imbalanced-learn
+# Shared by Spark and Airflow: read the existing XLSX training catalogue.
+openpyxl==3.1.5
