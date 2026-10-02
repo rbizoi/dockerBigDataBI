@@ -33,4 +33,4 @@ CREATE TABLE IF NOT EXISTS order_lines (
 CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
 CREATE INDEX IF NOT EXISTS idx_orders_order_ts ON orders(order_ts);
 
-CREATE DATABASE ebrasil;
+SELECT 'CREATE DATABASE ebrasil' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ebrasil')\gexec

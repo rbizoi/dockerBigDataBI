@@ -1,0 +1,11 @@
+.git
+.idea
+reports
+airflow/logs
+data
+spark/notebooks
+images
+documentation
+**/__pycache__
+.env
+.env.example

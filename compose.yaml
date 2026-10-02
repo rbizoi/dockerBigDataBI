@@ -1,72 +1,62 @@
 name: bigdata-training
-
-x-spark-runtime: &spark-runtime
-  image: bigdata-training/spark-runtime:local
-  restart: unless-stopped
-  environment:
-    AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-bigdataadmin}
-    AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
-    AWS_REGION: ${AWS_REGION:-us-east-1}
-    AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
-    SPARK_NO_DAEMONIZE: "true"
-    PYSPARK_PYTHON: python3
-  volumes:
-    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
-    - ./spark/conf/spark-env.sh:/opt/spark/conf/spark-env.sh:ro
-    - ./spark/jobs:/opt/spark/jobs:ro
-    - ./spark/notebooks:/opt/spark/notebooks
-    - ./data:/opt/spark/data:ro
-  networks:
-    - training-net
-
 services:
   postgres-source:
     image: postgres:17.11-alpine
     restart: unless-stopped
     mem_limit: 768m
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-training}
-      POSTGRES_USER: ${POSTGRES_USER:-training}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-training}
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
     ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    - 127.0.0.1:${POSTGRES_PORT:-5432}:5432
     volumes:
-      - postgres-source-data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    - postgres-source-data:/var/lib/postgresql/data
+    - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-training} -d ${POSTGRES_DB:-training}"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U ${POSTGRES_USER:-formation} -d ${POSTGRES_DB:-formation}
       interval: 5s
       timeout: 5s
       retries: 24
       start_period: 5s
-    networks: [training-net]
-
+    networks:
+    - training-net
   postgres-bootstrap:
     image: postgres:17.11-alpine
-    restart: "no"
+    restart: 'no'
     mem_limit: 256m
     depends_on:
       postgres-source:
         condition: service_healthy
     environment:
       PGHOST: postgres-source
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DB:-training}
-      PGUSER: ${POSTGRES_USER:-training}
-      PGPASSWORD: ${POSTGRES_PASSWORD:-training}
+      PGPORT: '5432'
+      PGDATABASE: ${POSTGRES_DB:-formation}
+      PGUSER: ${POSTGRES_USER:-formation}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-formation}
     volumes:
-      - ./postgres/init:/sql:ro
-    entrypoint: ["/bin/sh", "-ec"]
-    command: |
-      psql -v ON_ERROR_STOP=1 -f /sql/01_schema.sql
-      psql -v ON_ERROR_STOP=1 -f /sql/02_seed.sql
-      count="$$(psql -v ON_ERROR_STOP=1 -Atc 'select count(*) from public.customers')"
-      case "$$count" in ''|*[!0-9]*) echo "invalid customer count: $$count" >&2; exit 31 ;; esac
-      test "$$count" -ge 5 || { echo "expected >=5 customers, got $$count" >&2; exit 32; }
-      echo "POSTGRES_BOOTSTRAP_OK customers=$$count"
-    networks: [training-net]
+    - ./postgres/init:/sql:ro
+    entrypoint:
+    - /bin/sh
+    - -ec
+    command:
+    - 'psql -v ON_ERROR_STOP=1 -f /sql/01_schema.sql
 
+      psql -v ON_ERROR_STOP=1 -f /sql/02_seed.sql
+
+      count="$$(psql -v ON_ERROR_STOP=1 -Atc ''select count(*) from public.customers'')"
+
+      case "$$count" in ''''|*[!0-9]*) echo "invalid customer count: $$count" >&2; exit 31 ;; esac
+
+      test "$$count" -ge 5 || { echo "expected >=5 customers, got $$count" >&2; exit 32; }
+
+      echo "POSTGRES_BOOTSTRAP_OK customers=$$count"
+
+      '
+    networks:
+    - training-net
   kafka:
     image: apache/kafka:4.3.1
     restart: unless-stopped
@@ -90,46 +80,49 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     ports:
-      - "127.0.0.1:${KAFKA_EXTERNAL_PORT:-29092}:9092"
+    - 127.0.0.1:${KAFKA_EXTERNAL_PORT:-29092}:9092
     volumes:
-      - kafka-data:/var/lib/kafka/data
+    - kafka-data:/var/lib/kafka/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --list >/dev/null 2>&1"]
+      test:
+      - CMD-SHELL
+      - /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --list >/dev/null 2>&1
       interval: 5s
       timeout: 10s
       retries: 30
       start_period: 15s
-    networks: [training-net]
-
+    networks:
+    - training-net
   kafka-init:
-    image: apache/kafka:4.3.1
-    restart: "no"
+    image: bigdata-training/bootstrap:local
+    restart: 'no'
     mem_limit: 384m
     environment:
-      KAFKA_HEAP_OPTS: -Xms128m -Xmx256m
       KAFKA_BOOTSTRAP_SERVER: kafka:19092
-      KAFKA_TOPIC_PARTITIONS: "3"
-      KAFKA_REPLICATION_FACTOR: "1"
-      KAFKA_INIT_MAX_ATTEMPTS: "30"
-      KAFKA_INIT_RETRY_SECONDS: "2"
     depends_on:
       kafka:
         condition: service_healthy
-    entrypoint: ["/bin/bash", "/opt/training/init-topics.sh"]
-    volumes:
-      - ./kafka/init-topics.sh:/opt/training/init-topics.sh:ro
-    networks: [training-net]
-
+    entrypoint:
+    - python
+    - /app/kafka_init.py
+    volumes: []
+    networks:
+    - training-net
+    build:
+      context: ./docker/bootstrap
   objectstore-permissions:
     image: alpine:3.22.5
-    restart: "no"
+    restart: 'no'
     mem_limit: 64m
-    user: "0:0"
-    command: ["/bin/sh", "-ec", "chown -R 10001:10001 /data"]
+    user: 0:0
+    command:
+    - /bin/sh
+    - -ec
+    - chown -R 10001:10001 /data
     volumes:
-      - objectstore-data:/data
-    networks: [training-net]
-
+    - objectstore-data:/data
+    networks:
+    - training-net
   objectstore:
     image: rustfs/rustfs:1.0.0-rc.6
     restart: unless-stopped
@@ -139,54 +132,59 @@ services:
         condition: service_completed_successfully
     environment:
       RUSTFS_VOLUMES: /data
-      RUSTFS_ADDRESS: ":9000"
-      RUSTFS_CONSOLE_ADDRESS: ":9001"
-      RUSTFS_CONSOLE_ENABLE: "true"
-      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-bigdataadmin}
-      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
+      RUSTFS_ADDRESS: :9000
+      RUSTFS_CONSOLE_ADDRESS: :9001
+      RUSTFS_CONSOLE_ENABLE: 'true'
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-labadmin}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
       RUSTFS_REGION: ${AWS_REGION:-us-east-1}
-      RUSTFS_UNSAFE_BYPASS_DISK_CHECK: "true"
+      RUSTFS_UNSAFE_BYPASS_DISK_CHECK: 'true'
       RUSTFS_OBS_LOGGER_LEVEL: warn
     ports:
-      - "127.0.0.1:${S3_API_PORT:-9000}:9000"
-      - "127.0.0.1:${S3_CONSOLE_PORT:-9001}:9001"
+    - 127.0.0.1:${S3_API_PORT:-9000}:9000
+    - 127.0.0.1:${S3_CONSOLE_PORT:-9001}:9001
     volumes:
-      - objectstore-data:/data
+    - objectstore-data:/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health/ready >/dev/null"]
+      test:
+      - CMD-SHELL
+      - curl -fsS http://127.0.0.1:9000/health/ready >/dev/null
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 20s
-    networks: [training-net]
-
+    networks:
+    - training-net
   objectstore-init:
     image: bigdata-training/objectstore-init:local
     build:
       context: ./docker/objectstore-init
-    restart: "no"
+    restart: 'no'
     mem_limit: 256m
     depends_on:
       objectstore:
         condition: service_healthy
     environment:
       S3_ENDPOINT: http://objectstore:9000
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-bigdataadmin}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-labadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
       AWS_REGION: ${AWS_REGION:-us-east-1}
-      REQUIRED_BUCKETS: warehouse,lakehouse,checkpoints
-    networks: [training-net]
-
+      REQUIRED_BUCKETS: warehouse,lakehouse,checkpoints,druid
+    networks:
+    - training-net
   iceberg-catalog-permissions:
     image: alpine:3.22.5
-    restart: "no"
+    restart: 'no'
     mem_limit: 64m
-    user: "0:0"
-    command: ["/bin/sh", "-ec", "chown -R 1000:1000 /catalog"]
+    user: 0:0
+    command:
+    - /bin/sh
+    - -ec
+    - chown -R 1000:1000 /catalog
     volumes:
-      - iceberg-catalog-data:/catalog
-    networks: [training-net]
-
+    - iceberg-catalog-data:/catalog
+    networks:
+    - training-net
   iceberg-rest:
     image: apache/iceberg-rest-fixture@sha256:db8de90b5b7693d4ac334c336f91d9bbe320d7b19f4f514d26de84cdfbcbfe8d
     restart: unless-stopped
@@ -197,50 +195,75 @@ services:
       iceberg-catalog-permissions:
         condition: service_completed_successfully
     environment:
-      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-bigdataadmin}
-      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
       AWS_REGION: ${AWS_REGION:-us-east-1}
       AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
       CATALOG_WAREHOUSE: s3://warehouse/
       CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
       CATALOG_S3_ENDPOINT: http://objectstore:9000
-      CATALOG_S3_PATH__STYLE__ACCESS: "true"
+      CATALOG_S3_PATH__STYLE__ACCESS: 'true'
       CATALOG_URI: jdbc:sqlite:/var/lib/iceberg/catalog.db
-      CATALOG_CLIENTS: "1"
+      CATALOG_CLIENTS: '1'
       CATALOG_JDBC_SCHEMA__VERSION: V1
-      CATALOG_JDBC_STRICT__MODE: "true"
+      CATALOG_JDBC_STRICT__MODE: 'true'
     ports:
-      - "127.0.0.1:${ICEBERG_REST_PORT:-8181}:8181"
+    - 127.0.0.1:${ICEBERG_REST_PORT:-8181}:8181
     volumes:
-      - iceberg-catalog-data:/var/lib/iceberg
+    - iceberg-catalog-data:/var/lib/iceberg
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8181/v1/config >/dev/null"]
+      test:
+      - CMD-SHELL
+      - curl -fsS http://127.0.0.1:8181/v1/config >/dev/null
       interval: 5s
       timeout: 5s
       retries: 30
       start_period: 10s
-    networks: [training-net]
-
+    networks:
+    - training-net
   spark-master:
-    <<: *spark-runtime
+    image: bigdata-training/spark-runtime:local
+    restart: unless-stopped
+    environment: &id001
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+      SPARK_NO_DAEMONIZE: 'true'
+      PYSPARK_PYTHON: python3
+      SPARK_LOG_DIR: /tmp/spark-logs
+      SPARK_PID_DIR: /tmp/spark-pids
+      SPARK_DAEMON_MEMORY: 512m
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/notebooks:/opt/spark/notebooks
+    - ./data:/opt/spark/data:ro
+    networks: &id002
+    - training-net
     build:
       context: .
       dockerfile: spark/runtime/Dockerfile
     hostname: spark-master
     mem_limit: 2g
     command:
-      - /opt/spark/bin/spark-class
-      - org.apache.spark.deploy.master.Master
-      - --host
-      - spark-master
-      - --port
-      - "7077"
-      - --webui-port
-      - "8080"
+    - /opt/spark/bin/spark-class
+    - org.apache.spark.deploy.master.Master
+    - --host
+    - spark-master
+    - --port
+    - '7077'
+    - --webui-port
+    - '8080'
     ports:
-      - "127.0.0.1:${SPARK_MASTER_UI_PORT:-18080}:8080"
+    - 127.0.0.1:${SPARK_MASTER_UI_PORT:-18080}:8080
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-master',7077),3); s.close()"]
+      test:
+      - CMD
+      - python3
+      - -c
+      - import socket; s=socket.create_connection(('spark-master',7077),3); s.close()
       interval: 5s
       timeout: 5s
       retries: 30
@@ -252,25 +275,37 @@ services:
         condition: service_completed_successfully
       iceberg-rest:
         condition: service_healthy
-
   spark-worker-1:
-    <<: *spark-runtime
+    image: bigdata-training/spark-runtime:local
+    restart: unless-stopped
+    environment: *id001
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/notebooks:/opt/spark/notebooks
+    - ./data:/opt/spark/data:ro
+    networks: *id002
     hostname: spark-worker-1
     mem_limit: 1536m
     command:
-      - /opt/spark/bin/spark-class
-      - org.apache.spark.deploy.worker.Worker
-      - spark://spark-master:7077
-      - --cores
-      - "2"
-      - --memory
-      - "1g"
-      - --webui-port
-      - "8081"
+    - /opt/spark/bin/spark-class
+    - org.apache.spark.deploy.worker.Worker
+    - spark://spark-master:7077
+    - --cores
+    - '2'
+    - --memory
+    - 1g
+    - --webui-port
+    - '8081'
     ports:
-      - "127.0.0.1:${SPARK_WORKER1_UI_PORT:-18081}:8081"
+    - 127.0.0.1:${SPARK_WORKER1_UI_PORT:-18081}:8081
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-worker-1',8081),3); s.close()"]
+      test:
+      - CMD
+      - python3
+      - -c
+      - import socket; s=socket.create_connection(('spark-worker-1',8081),3); s.close()
       interval: 5s
       timeout: 5s
       retries: 30
@@ -278,25 +313,40 @@ services:
     depends_on:
       spark-master:
         condition: service_healthy
-
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
   spark-worker-2:
-    <<: *spark-runtime
+    image: bigdata-training/spark-runtime:local
+    restart: unless-stopped
+    environment: *id001
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/notebooks:/opt/spark/notebooks
+    - ./data:/opt/spark/data:ro
+    networks: *id002
     hostname: spark-worker-2
     mem_limit: 1536m
     command:
-      - /opt/spark/bin/spark-class
-      - org.apache.spark.deploy.worker.Worker
-      - spark://spark-master:7077
-      - --cores
-      - "2"
-      - --memory
-      - "1g"
-      - --webui-port
-      - "8081"
+    - /opt/spark/bin/spark-class
+    - org.apache.spark.deploy.worker.Worker
+    - spark://spark-master:7077
+    - --cores
+    - '2'
+    - --memory
+    - 1g
+    - --webui-port
+    - '8081'
     ports:
-      - "127.0.0.1:${SPARK_WORKER2_UI_PORT:-18082}:8081"
+    - 127.0.0.1:${SPARK_WORKER2_UI_PORT:-18082}:8081
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-worker-2',8081),3); s.close()"]
+      test:
+      - CMD
+      - python3
+      - -c
+      - import socket; s=socket.create_connection(('spark-worker-2',8081),3); s.close()
       interval: 5s
       timeout: 5s
       retries: 30
@@ -304,18 +354,33 @@ services:
     depends_on:
       spark-master:
         condition: service_healthy
-
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
   spark-history:
-    <<: *spark-runtime
+    image: bigdata-training/spark-runtime:local
+    restart: unless-stopped
+    environment: *id001
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/notebooks:/opt/spark/notebooks
+    - ./data:/opt/spark/data:ro
+    networks: *id002
     hostname: spark-history
     mem_limit: 1g
     command:
-      - /opt/spark/bin/spark-class
-      - org.apache.spark.deploy.history.HistoryServer
+    - /opt/spark/bin/spark-class
+    - org.apache.spark.deploy.history.HistoryServer
     ports:
-      - "127.0.0.1:${SPARK_HISTORY_UI_PORT:-18083}:18080"
+    - 127.0.0.1:${SPARK_HISTORY_UI_PORT:-18083}:18080
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('spark-history',18080),3); s.close()"]
+      test:
+      - CMD
+      - python3
+      - -c
+      - import socket; s=socket.create_connection(('spark-history',18080),3); s.close()
       interval: 5s
       timeout: 5s
       retries: 40
@@ -325,18 +390,18 @@ services:
         condition: service_healthy
       objectstore-init:
         condition: service_completed_successfully
-
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
   spark-jupyter:
-    <<: *spark-runtime
-    hostname: spark-jupyter
-    user: spark
-    mem_limit: 2g
+    image: bigdata-training/spark-runtime:local
+    restart: unless-stopped
     environment:
-      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-bigdataadmin}
-      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
       AWS_REGION: ${AWS_REGION:-us-east-1}
       AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
-      SPARK_NO_DAEMONIZE: "true"
+      SPARK_NO_DAEMONIZE: 'true'
       HOME: /home/spark
       XDG_CONFIG_HOME: /home/spark/.config
       XDG_CACHE_HOME: /home/spark/.cache
@@ -349,24 +414,42 @@ services:
       SPARK_MASTER_URL: spark://spark-master:7077
       PYSPARK_PYTHON: python3
       PYSPARK_DRIVER_PYTHON: python3
-      PYSPARK_SUBMIT_ARGS: --master spark://spark-master:7077 --conf spark.driver.host=spark-jupyter --conf spark.driver.bindAddress=0.0.0.0 --conf spark.ui.enabled=true --conf spark.ui.port=4040 pyspark-shell
+      PYSPARK_SUBMIT_ARGS: --master spark://spark-master:7077 --conf spark.driver.host=spark-jupyter --conf spark.driver.bindAddress=0.0.0.0
+        --conf spark.ui.enabled=true --conf spark.ui.port=4040 pyspark-shell
       JUPYTER_TOKEN: ${JUPYTER_TOKEN:-CHANGE_ME}
+      SPARK_LOG_DIR: /tmp/spark-logs
+      SPARK_PID_DIR: /tmp/spark-pids
+      SPARK_DAEMON_MEMORY: 512m
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./data:/opt/spark/data:ro
+    - spark-notebooks:/opt/spark/notebooks
+    networks: *id002
+    hostname: spark-jupyter
+    user: spark
+    mem_limit: 2g
     command:
-      - python3
-      - -m
-      - jupyter
-      - lab
-      - --ip=0.0.0.0
-      - --port=8888
-      - --no-browser
-      - --ServerApp.root_dir=/opt/spark/notebooks
-      - --IdentityProvider.token=${JUPYTER_TOKEN:-CHANGE_ME}
-      - --ServerApp.password=
+    - python3
+    - -m
+    - jupyter
+    - lab
+    - --ip=0.0.0.0
+    - --port=8888
+    - --no-browser
+    - --ServerApp.root_dir=/opt/spark/notebooks
+    - --IdentityProvider.token=${JUPYTER_TOKEN:-CHANGE_ME}
+    - --ServerApp.password=
     ports:
-      - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
-      - "127.0.0.1:${SPARK_JOBS_UI_PORT:-4040}:4040"
+    - 127.0.0.1:${JUPYTER_PORT:-8888}:8888
+    - 127.0.0.1:${SPARK_JOBS_UI_PORT:-4040}:4040
     healthcheck:
-      test: ["CMD", "python3", "-c", "import socket; s=socket.create_connection(('127.0.0.1',8888),3); s.close()"]
+      test:
+      - CMD
+      - python3
+      - -c
+      - import socket; s=socket.create_connection(('127.0.0.1',8888),3); s.close()
       interval: 5s
       timeout: 5s
       retries: 40
@@ -378,7 +461,11 @@ services:
         condition: service_healthy
       spark-worker-2:
         condition: service_healthy
-
+      notebooks-init:
+        condition: service_completed_successfully
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
   trino:
     image: trinodb/trino:483
     restart: unless-stopped
@@ -391,50 +478,60 @@ services:
       spark-master:
         condition: service_healthy
     environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-bigdataadmin}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
-      POSTGRES_DB: ${POSTGRES_DB:-training}
-      POSTGRES_USER: ${POSTGRES_USER:-training}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-training}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-labadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
     ports:
-      - "127.0.0.1:${TRINO_PORT:-8085}:8080"
+    - 127.0.0.1:${TRINO_PORT:-8085}:8080
     volumes:
-      - ./trino/catalog:/etc/trino/catalog:ro
-      - ./trino/etc/jvm.config:/etc/trino/jvm.config:ro
+    - ./trino/catalog:/etc/trino/catalog:ro
+    - ./trino/etc/jvm.config:/etc/trino/jvm.config:ro
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/v1/info >/dev/null"]
+      test:
+      - CMD-SHELL
+      - curl -fsS http://127.0.0.1:8080/v1/info >/dev/null
       interval: 5s
       timeout: 5s
       retries: 40
       start_period: 20s
-    networks: [training-net]
-
+    networks:
+    - training-net
   mock-opendata:
     image: bigdata-training/mock-opendata:local
     build:
       context: ./docker/mock-opendata
-    profiles: ["demo"]
+    profiles:
+    - demo
+    - full
     restart: unless-stopped
     mem_limit: 256m
     environment:
       DATA_FILE: /data/opendata/sample.json
     volumes:
-      - ./data:/data:ro
+    - ./data:/data:ro
     ports:
-      - "127.0.0.1:${MOCK_OPENDATA_PORT:-18000}:8000"
+    - 127.0.0.1:${MOCK_OPENDATA_PORT:-18000}:8000
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()
       interval: 10s
       timeout: 5s
       retries: 20
       start_period: 10s
-    networks: [training-net]
-
+    networks:
+    - training-net
   api-producer:
     image: bigdata-training/api-producer:local
     build:
       context: ./docker/api-producer
-    profiles: ["demo"]
+    profiles:
+    - demo
+    - full
     restart: unless-stopped
     mem_limit: 256m
     depends_on:
@@ -448,14 +545,15 @@ services:
       LOG_TOPIC: application.logs
       OPENDATA_URL: ${OPENDATA_URL:-http://mock-opendata:8000/api/events}
       POLL_SECONDS: ${OPENDATA_POLL_SECONDS:-15}
-    networks: [training-net]
-
+    networks:
+    - training-net
   file-producer:
     image: bigdata-training/file-producer:local
     build:
       context: ./docker/file-producer
-    profiles: ["seed"]
-    restart: "no"
+    profiles:
+    - seed
+    restart: 'no'
     mem_limit: 384m
     depends_on:
       kafka-init:
@@ -464,15 +562,16 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:19092
       DATA_DIR: /data/input
     volumes:
-      - ./data:/data:ro
-    networks: [training-net]
-
+    - ./data:/data:ro
+    networks:
+    - training-net
   postgres-producer:
     image: bigdata-training/postgres-producer:local
     build:
       context: ./docker/postgres-producer
-    profiles: ["seed"]
-    restart: "no"
+    profiles:
+    - seed
+    restart: 'no'
     mem_limit: 256m
     depends_on:
       kafka-init:
@@ -482,18 +581,19 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:19092
       PGHOST: postgres-source
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DB:-training}
-      PGUSER: ${POSTGRES_USER:-training}
-      PGPASSWORD: ${POSTGRES_PASSWORD:-training}
-    networks: [training-net]
-
+      PGPORT: '5432'
+      PGDATABASE: ${POSTGRES_DB:-formation}
+      PGUSER: ${POSTGRES_USER:-formation}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-formation}
+    networks:
+    - training-net
   web-log-producer:
     image: bigdata-training/web-log-producer:local
     build:
       context: ./docker/web-log-producer
-    profiles: ["logs"]
-    restart: "no"
+    profiles:
+    - logs
+    restart: 'no'
     mem_limit: 256m
     depends_on:
       kafka-init:
@@ -505,12 +605,14 @@ services:
       LOG_DATA_DIR: /data/logs
       LOG_DELAY_MS: ${LOG_DELAY_MS:-0}
     volumes:
-      - ./data:/data:ro
-    networks: [training-net]
-
+    - ./data:/data:ro
+    networks:
+    - training-net
   airflow-db:
     image: postgres:17.11-alpine
-    profiles: ["orchestration"]
+    profiles:
+    - orchestration
+    - full
     restart: unless-stopped
     mem_limit: 512m
     environment:
@@ -518,20 +620,24 @@ services:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
     volumes:
-      - airflow-db-data:/var/lib/postgresql/data
+    - airflow-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U airflow -d airflow
       interval: 5s
       timeout: 5s
       retries: 24
-    networks: [training-net]
-
+    networks:
+    - training-net
   airflow:
     image: bigdata-training/airflow:local
     build:
       context: .
       dockerfile: docker/airflow/Dockerfile
-    profiles: ["orchestration"]
+    profiles:
+    - orchestration
+    - full
     hostname: airflow
     restart: unless-stopped
     mem_limit: 2g
@@ -545,43 +651,49 @@ services:
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: 'true'
       AIRFLOW_CONN_SPARK_DEFAULT: spark://spark-master:7077?deploy-mode=client
-      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-bigdataadmin}
-      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-bigdatasecret2026}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
       AWS_REGION: ${AWS_REGION:-us-east-1}
       AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
       SPARK_CONF_DIR: /opt/spark/conf
       SPARK_LOCAL_IP: airflow
       PYSPARK_PYTHON: python3
       PYSPARK_DRIVER_PYTHON: python3
-    command: ["airflow", "standalone"]
+    command:
+    - airflow
+    - standalone
     ports:
-      - "127.0.0.1:${AIRFLOW_PORT:-8088}:8080"
+    - 127.0.0.1:${AIRFLOW_PORT:-8088}:8080
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/monitor/health >/dev/null"]
+      test:
+      - CMD-SHELL
+      - curl -fsS http://127.0.0.1:8080/api/v2/monitor/health >/dev/null
       interval: 10s
       timeout: 10s
       retries: 45
       start_period: 45s
     volumes:
-      - ./airflow/dags:/opt/airflow/dags:ro
-      - ./airflow/logs:/opt/airflow/logs
-      - ./spark/jobs:/opt/spark/jobs:ro
-      - ./spark/conf:/opt/spark/conf:ro
-      - ./data:/opt/spark/data:ro
-    networks: [training-net]
-
+    - ./airflow/dags:/opt/airflow/dags:ro
+    - airflow-logs:/opt/airflow/logs
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/conf:/opt/spark/conf:ro
+    - ./data:/opt/spark/data:ro
+    networks:
+    - training-net
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.5.4
-    profiles: ["elastic"]
+    profiles:
+    - elastic
+    - full
     restart: unless-stopped
     mem_limit: 1536m
     environment:
       discovery.type: single-node
-      xpack.security.enabled: "false"
-      xpack.security.enrollment.enabled: "false"
+      xpack.security.enabled: 'false'
+      xpack.security.enrollment.enabled: 'false'
       index.store.type: niofs
       ES_JAVA_OPTS: -Xms768m -Xmx768m
     ulimits:
@@ -589,20 +701,24 @@ services:
         soft: 65535
         hard: 65535
     ports:
-      - "127.0.0.1:${ELASTICSEARCH_PORT:-9200}:9200"
+    - 127.0.0.1:${ELASTICSEARCH_PORT:-9200}:9200
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+    - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9200/_cluster/health >/dev/null"]
+      test:
+      - CMD-SHELL
+      - curl -fsS http://127.0.0.1:9200/_cluster/health >/dev/null
       interval: 10s
       timeout: 5s
       retries: 45
       start_period: 60s
-    networks: [training-net]
-
+    networks:
+    - training-net
   kibana:
     image: docker.elastic.co/kibana/kibana:9.5.4
-    profiles: ["elastic"]
+    profiles:
+    - elastic
+    - full
     restart: unless-stopped
     mem_limit: 1536m
     depends_on:
@@ -612,12 +728,14 @@ services:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       NODE_OPTIONS: --max-old-space-size=1024
     ports:
-      - "127.0.0.1:${KIBANA_PORT:-5601}:5601"
-    networks: [training-net]
-
+    - 127.0.0.1:${KIBANA_PORT:-5601}:5601
+    networks:
+    - training-net
   logstash:
     image: docker.elastic.co/logstash/logstash:9.5.4
-    profiles: ["elastic"]
+    profiles:
+    - elastic
+    - full
     restart: unless-stopped
     mem_limit: 768m
     depends_on:
@@ -627,19 +745,631 @@ services:
         condition: service_healthy
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
-      XPACK_MONITORING_ENABLED: "false"
+      XPACK_MONITORING_ENABLED: 'false'
     volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    networks: [training-net]
-
+    - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    networks:
+    - training-net
+  notebooks-init:
+    image: bigdata-training/spark-runtime:local
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
+    user: 0:0
+    restart: 'no'
+    entrypoint:
+    - python3
+    - /init/notebooks.py
+    volumes:
+    - ./docker/bootstrap/notebooks.py:/init/notebooks.py:ro
+    - ./spark/notebooks:/seed:ro
+    - spark-notebooks:/notebooks
+    networks:
+    - training-net
+  pgadmin:
+    image: dpage/pgadmin4:9.8
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@formation.fr}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-formation}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+      PGADMIN_SERVER_JSON_FILE: /config/servers.json
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: 'True'
+    ports:
+    - 127.0.0.1:${PGADMIN_PORT:-5050}:80
+    volumes:
+    - pgadmin-data:/var/lib/pgadmin
+    - pgadmin-config:/config:ro
+    depends_on:
+      postgres-source:
+        condition: service_healthy
+      pgadmin-config:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    restart: unless-stopped
+    environment:
+      KAFKA_CLUSTERS_0_NAME: Formation
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:19092
+    ports:
+    - 127.0.0.1:${KAFKA_UI_PORT:-8086}:8080
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+  druid-db:
+    image: postgres:17.11-alpine
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: druid
+      POSTGRES_USER: druid
+      POSTGRES_PASSWORD: ${DRUID_DB_PASSWORD:-druid}
+    volumes:
+    - druid-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U druid -d druid
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+    - training-net
+  zookeeper:
+    image: zookeeper:3.9.3
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    volumes:
+    - zookeeper-data:/data
+    - zookeeper-log:/datalog
+    networks:
+    - training-net
+  druid-coordinator:
+    image: apache/druid:37.0.0
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    command:
+    - coordinator
+    environment:
+      DRUID_SINGLE_NODE_CONF: micro-quickstart
+      druid_extensions_loadList: '["druid-kafka-indexing-service","druid-s3-extensions","postgresql-metadata-storage"]'
+      druid_zk_service_host: zookeeper:2181
+      druid_metadata_storage_type: postgresql
+      druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-db:5432/druid
+      druid_metadata_storage_connector_user: druid
+      druid_metadata_storage_connector_password: ${DRUID_DB_PASSWORD:-druid}
+      druid_storage_type: s3
+      druid_storage_bucket: druid
+      druid_storage_baseKey: segments
+      druid_s3_endpoint_url: http://objectstore:9000
+      druid_s3_endpoint_signingRegion: ${AWS_REGION:-us-east-1}
+      druid_s3_enablePathStyleAccess: 'true'
+      druid_s3_accessKey: ${S3_ACCESS_KEY:-labadmin}
+      druid_s3_secretKey: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      druid_indexer_logs_type: s3
+      druid_indexer_logs_s3Bucket: druid
+      druid_indexer_logs_s3Prefix: task-logs
+      druid_processing_numThreads: '1'
+      druid_processing_numMergeBuffers: '2'
+      druid_processing_buffer_sizeBytes: 64MiB
+      druid_indexer_runner_javaOptsArray: '["-server","-Xmx512m","-Xms512m","-XX:MaxDirectMemorySize=256m","-Duser.timezone=UTC","-Dfile.encoding=UTF-8"]'
+      druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+      druid_worker_capacity: '1'
+      DRUID_XMS: 512m
+      DRUID_XMX: 512m
+      DRUID_MAXDIRECTMEMORYSIZE: 256m
+      druid_coordinator_startDelay: PT5S
+      druid_coordinator_period: PT5S
+      druid_router_managementProxy_enabled: 'true'
+    volumes:
+    - druid-coordinator-var:/opt/druid/var
+    depends_on:
+      druid-db:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
+      objectstore-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O - http://localhost:8081/status/health >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+  druid-broker:
+    image: apache/druid:37.0.0
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    command:
+    - broker
+    environment:
+      DRUID_SINGLE_NODE_CONF: micro-quickstart
+      druid_extensions_loadList: '["druid-kafka-indexing-service","druid-s3-extensions","postgresql-metadata-storage"]'
+      druid_zk_service_host: zookeeper:2181
+      druid_metadata_storage_type: postgresql
+      druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-db:5432/druid
+      druid_metadata_storage_connector_user: druid
+      druid_metadata_storage_connector_password: ${DRUID_DB_PASSWORD:-druid}
+      druid_storage_type: s3
+      druid_storage_bucket: druid
+      druid_storage_baseKey: segments
+      druid_s3_endpoint_url: http://objectstore:9000
+      druid_s3_endpoint_signingRegion: ${AWS_REGION:-us-east-1}
+      druid_s3_enablePathStyleAccess: 'true'
+      druid_s3_accessKey: ${S3_ACCESS_KEY:-labadmin}
+      druid_s3_secretKey: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      druid_indexer_logs_type: s3
+      druid_indexer_logs_s3Bucket: druid
+      druid_indexer_logs_s3Prefix: task-logs
+      druid_processing_numThreads: '1'
+      druid_processing_numMergeBuffers: '2'
+      druid_processing_buffer_sizeBytes: 64MiB
+      druid_indexer_runner_javaOptsArray: '["-server","-Xmx512m","-Xms512m","-XX:MaxDirectMemorySize=256m","-Duser.timezone=UTC","-Dfile.encoding=UTF-8"]'
+      druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+      druid_worker_capacity: '1'
+      DRUID_XMS: 512m
+      DRUID_XMX: 512m
+      DRUID_MAXDIRECTMEMORYSIZE: 256m
+      druid_coordinator_startDelay: PT5S
+      druid_coordinator_period: PT5S
+      druid_router_managementProxy_enabled: 'true'
+    volumes:
+    - druid-broker-var:/opt/druid/var
+    depends_on:
+      druid-db:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
+      objectstore-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O - http://localhost:8082/status/health >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+  druid-historical:
+    image: apache/druid:37.0.0
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    command:
+    - historical
+    environment:
+      DRUID_SINGLE_NODE_CONF: micro-quickstart
+      druid_extensions_loadList: '["druid-kafka-indexing-service","druid-s3-extensions","postgresql-metadata-storage"]'
+      druid_zk_service_host: zookeeper:2181
+      druid_metadata_storage_type: postgresql
+      druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-db:5432/druid
+      druid_metadata_storage_connector_user: druid
+      druid_metadata_storage_connector_password: ${DRUID_DB_PASSWORD:-druid}
+      druid_storage_type: s3
+      druid_storage_bucket: druid
+      druid_storage_baseKey: segments
+      druid_s3_endpoint_url: http://objectstore:9000
+      druid_s3_endpoint_signingRegion: ${AWS_REGION:-us-east-1}
+      druid_s3_enablePathStyleAccess: 'true'
+      druid_s3_accessKey: ${S3_ACCESS_KEY:-labadmin}
+      druid_s3_secretKey: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      druid_indexer_logs_type: s3
+      druid_indexer_logs_s3Bucket: druid
+      druid_indexer_logs_s3Prefix: task-logs
+      druid_processing_numThreads: '1'
+      druid_processing_numMergeBuffers: '2'
+      druid_processing_buffer_sizeBytes: 64MiB
+      druid_indexer_runner_javaOptsArray: '["-server","-Xmx512m","-Xms512m","-XX:MaxDirectMemorySize=256m","-Duser.timezone=UTC","-Dfile.encoding=UTF-8"]'
+      druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+      druid_worker_capacity: '1'
+      DRUID_XMS: 512m
+      DRUID_XMX: 512m
+      DRUID_MAXDIRECTMEMORYSIZE: 256m
+      druid_coordinator_startDelay: PT5S
+      druid_coordinator_period: PT5S
+      druid_router_managementProxy_enabled: 'true'
+    volumes:
+    - druid-historical-var:/opt/druid/var
+    depends_on:
+      druid-db:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
+      objectstore-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O - http://localhost:8083/status/health >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+  druid-middlemanager:
+    image: apache/druid:37.0.0
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    command:
+    - middleManager
+    environment:
+      DRUID_SINGLE_NODE_CONF: micro-quickstart
+      druid_extensions_loadList: '["druid-kafka-indexing-service","druid-s3-extensions","postgresql-metadata-storage"]'
+      druid_zk_service_host: zookeeper:2181
+      druid_metadata_storage_type: postgresql
+      druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-db:5432/druid
+      druid_metadata_storage_connector_user: druid
+      druid_metadata_storage_connector_password: ${DRUID_DB_PASSWORD:-druid}
+      druid_storage_type: s3
+      druid_storage_bucket: druid
+      druid_storage_baseKey: segments
+      druid_s3_endpoint_url: http://objectstore:9000
+      druid_s3_endpoint_signingRegion: ${AWS_REGION:-us-east-1}
+      druid_s3_enablePathStyleAccess: 'true'
+      druid_s3_accessKey: ${S3_ACCESS_KEY:-labadmin}
+      druid_s3_secretKey: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      druid_indexer_logs_type: s3
+      druid_indexer_logs_s3Bucket: druid
+      druid_indexer_logs_s3Prefix: task-logs
+      druid_processing_numThreads: '1'
+      druid_processing_numMergeBuffers: '2'
+      druid_processing_buffer_sizeBytes: 64MiB
+      druid_indexer_runner_javaOptsArray: '["-server","-Xmx512m","-Xms512m","-XX:MaxDirectMemorySize=256m","-Duser.timezone=UTC","-Dfile.encoding=UTF-8"]'
+      druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+      druid_worker_capacity: '1'
+      DRUID_XMS: 512m
+      DRUID_XMX: 512m
+      DRUID_MAXDIRECTMEMORYSIZE: 256m
+      druid_coordinator_startDelay: PT5S
+      druid_coordinator_period: PT5S
+      druid_router_managementProxy_enabled: 'true'
+    volumes:
+    - druid-middlemanager-var:/opt/druid/var
+    - ./data:/opt/training/data:ro
+    depends_on:
+      druid-db:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
+      objectstore-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O - http://localhost:8091/status/health >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+  druid-router:
+    image: apache/druid:37.0.0
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    command:
+    - router
+    environment:
+      DRUID_SINGLE_NODE_CONF: micro-quickstart
+      druid_extensions_loadList: '["druid-kafka-indexing-service","druid-s3-extensions","postgresql-metadata-storage"]'
+      druid_zk_service_host: zookeeper:2181
+      druid_metadata_storage_type: postgresql
+      druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-db:5432/druid
+      druid_metadata_storage_connector_user: druid
+      druid_metadata_storage_connector_password: ${DRUID_DB_PASSWORD:-druid}
+      druid_storage_type: s3
+      druid_storage_bucket: druid
+      druid_storage_baseKey: segments
+      druid_s3_endpoint_url: http://objectstore:9000
+      druid_s3_endpoint_signingRegion: ${AWS_REGION:-us-east-1}
+      druid_s3_enablePathStyleAccess: 'true'
+      druid_s3_accessKey: ${S3_ACCESS_KEY:-labadmin}
+      druid_s3_secretKey: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      druid_indexer_logs_type: s3
+      druid_indexer_logs_s3Bucket: druid
+      druid_indexer_logs_s3Prefix: task-logs
+      druid_processing_numThreads: '1'
+      druid_processing_numMergeBuffers: '2'
+      druid_processing_buffer_sizeBytes: 64MiB
+      druid_indexer_runner_javaOptsArray: '["-server","-Xmx512m","-Xms512m","-XX:MaxDirectMemorySize=256m","-Duser.timezone=UTC","-Dfile.encoding=UTF-8"]'
+      druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+      druid_worker_capacity: '1'
+      DRUID_XMS: 512m
+      DRUID_XMX: 512m
+      DRUID_MAXDIRECTMEMORYSIZE: 256m
+      druid_coordinator_startDelay: PT5S
+      druid_coordinator_period: PT5S
+      druid_router_managementProxy_enabled: 'true'
+    volumes:
+    - druid-router-var:/opt/druid/var
+    depends_on:
+      druid-db:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
+      objectstore-init:
+        condition: service_completed_successfully
+    networks:
+    - training-net
+    ports:
+    - 127.0.0.1:${DRUID_PORT:-8889}:8888
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O - http://localhost:8888/status/health >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+  superset-db:
+    image: postgres:17.11-alpine
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: ${SUPERSET_DB_PASSWORD:-superset}
+    volumes:
+    - superset-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U superset -d superset
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+    - training-net
+  superset-init:
+    image: bigdata-training/superset:local
+    build:
+      context: ./docker/superset
+    profiles:
+    - analytics
+    - full
+    restart: 'no'
+    environment: &id003
+      SUPERSET_CONFIG_PATH: /app/lab/superset_config.py
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-INSECURE_TRAINING_ONLY_CHANGE_ME_SUPERSET_SECRET}
+      SUPERSET_DB_PASSWORD: ${SUPERSET_DB_PASSWORD:-superset}
+      SUPERSET_ADMIN_USER: ${SUPERSET_ADMIN_USER:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-formation}
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
+    entrypoint:
+    - python
+    - /app/lab/initialize.py
+    depends_on:
+      superset-db:
+        condition: service_healthy
+    networks:
+    - training-net
+  superset:
+    image: bigdata-training/superset:local
+    build:
+      context: ./docker/superset
+    profiles:
+    - analytics
+    - full
+    restart: unless-stopped
+    environment: *id003
+    entrypoint:
+    - gunicorn
+    command:
+    - --bind
+    - 0.0.0.0:8088
+    - --workers
+    - '2'
+    - --timeout
+    - '120'
+    - superset.app:create_app()
+    ports:
+    - 127.0.0.1:${SUPERSET_PORT:-8089}:8088
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8088/health', timeout=5)
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 30s
+    networks:
+    - training-net
+  integration-check:
+    image: bigdata-training/spark-runtime:local
+    build:
+      context: .
+      dockerfile: spark/runtime/Dockerfile
+    profiles:
+    - checks
+    user: 0:0
+    restart: 'no'
+    hostname: integration-check
+    entrypoint:
+    - python3
+    - /checks/integration.py
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+      SPARK_NO_DAEMONIZE: 'true'
+      PYSPARK_PYTHON: python3
+      SPARK_LOG_DIR: /tmp/spark-logs
+      SPARK_PID_DIR: /tmp/spark-pids
+      SPARK_DAEMON_MEMORY: 512m
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
+      SUPERSET_ADMIN_USER: ${SUPERSET_ADMIN_USER:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-formation}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-CHANGE_ME}
+    volumes:
+    - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    - ./spark/conf/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./data:/opt/spark/data:ro
+    - ./checks:/checks:ro
+    - ./reports:/reports
+    - ./docker:/producers:ro
+    networks:
+    - training-net
+  airflow-check:
+    image: bigdata-training/airflow:local
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    profiles:
+    - checks
+    hostname: airflow-check
+    entrypoint:
+    - python3
+    - /checks/airflow_check.py
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: 'true'
+      AIRFLOW_CONN_SPARK_DEFAULT: spark://spark-master:7077?deploy-mode=client
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-labadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+      SPARK_CONF_DIR: /opt/spark/conf
+      SPARK_LOCAL_IP: airflow
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
+    volumes:
+    - ./spark/jobs:/opt/spark/jobs:ro
+    - ./spark/conf:/opt/spark/conf:ro
+    - ./data:/opt/spark/data:ro
+    - ./checks:/checks:ro
+    - ./airflow/dags:/opt/airflow/dags:ro
+    - ./reports:/reports
+    networks:
+    - training-net
+    user: 0:0
+  dashboard:
+    image: python:3.12-slim
+    restart: unless-stopped
+    entrypoint:
+    - python
+    - /app/server.py
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formation}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-labadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-TRAINING_ONLY_S3_PASSWORD}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-CHANGE_ME}
+      PGADMIN_EMAIL: ${PGADMIN_EMAIL:-admin@formation.fr}
+      PGADMIN_PASSWORD: ${PGADMIN_PASSWORD:-formation}
+      SUPERSET_ADMIN_USER: ${SUPERSET_ADMIN_USER:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-formation}
+      S3_CONSOLE_PORT: ${S3_CONSOLE_PORT:-9001}
+      PGADMIN_PORT: ${PGADMIN_PORT:-5050}
+      KAFKA_UI_PORT: ${KAFKA_UI_PORT:-8086}
+      SPARK_MASTER_UI_PORT: ${SPARK_MASTER_UI_PORT:-18080}
+      SPARK_WORKER1_UI_PORT: ${SPARK_WORKER1_UI_PORT:-18081}
+      SPARK_WORKER2_UI_PORT: ${SPARK_WORKER2_UI_PORT:-18082}
+      SPARK_HISTORY_UI_PORT: ${SPARK_HISTORY_UI_PORT:-18083}
+      SPARK_JOBS_UI_PORT: ${SPARK_JOBS_UI_PORT:-4040}
+      JUPYTER_PORT: ${JUPYTER_PORT:-8888}
+      TRINO_PORT: ${TRINO_PORT:-8085}
+      AIRFLOW_PORT: ${AIRFLOW_PORT:-8088}
+      KIBANA_PORT: ${KIBANA_PORT:-5601}
+      DRUID_PORT: ${DRUID_PORT:-8889}
+      SUPERSET_PORT: ${SUPERSET_PORT:-8089}
+      ICEBERG_REST_PORT: ${ICEBERG_REST_PORT:-8181}
+      ELASTICSEARCH_PORT: ${ELASTICSEARCH_PORT:-9200}
+    ports:
+    - 127.0.0.1:${DASHBOARD_PORT:-8090}:8090
+    volumes:
+    - ./dashboard:/app:ro
+    - ./reports:/reports:ro
+    networks:
+    - training-net
+  pgadmin-config:
+    image: python:3.12-slim
+    restart: 'no'
+    entrypoint:
+    - python
+    - /init/pgadmin.py
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-formation}
+      POSTGRES_DB: ${POSTGRES_DB:-formation}
+    volumes:
+    - ./docker/bootstrap/pgadmin.py:/init/pgadmin.py:ro
+    - pgadmin-config:/config
+    networks:
+    - training-net
+  static-check:
+    image: bigdata-training/bootstrap:local
+    build:
+      context: ./docker/bootstrap
+    profiles:
+    - checks
+    entrypoint:
+    - python
+    - /project/tools/static_validate.py
+    volumes:
+    - .:/project:ro
 networks:
   training-net:
     driver: bridge
-
 volumes:
-  postgres-source-data:
-  kafka-data:
-  objectstore-data:
-  iceberg-catalog-data:
-  airflow-db-data:
-  elasticsearch-data:
+  postgres-source-data: null
+  kafka-data: null
+  objectstore-data: null
+  iceberg-catalog-data: null
+  airflow-db-data: null
+  elasticsearch-data: null
+  spark-notebooks: null
+  airflow-logs: null
+  pgadmin-data: null
+  druid-coordinator-var: null
+  druid-broker-var: null
+  druid-historical-var: null
+  druid-middlemanager-var: null
+  druid-router-var: null
+  druid-db-data: null
+  zookeeper-data: null
+  zookeeper-log: null
+  superset-db-data: null
+  pgadmin-config: null
