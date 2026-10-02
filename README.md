@@ -1,129 +1,120 @@
-# Docker formation BigData et BI
+# Docker formation Big Data et BI — Windows et Linux
 
-Laboratoire Docker Desktop pour une formation Big Data / Business Intelligence sous Windows.
+Laboratoire pédagogique utilisable avec **les mêmes commandes Docker** sous Windows (Docker Desktop en mode conteneurs Linux / WSL2) et Linux (Docker Engine + Compose v2, ou Docker Desktop). Aucun script Shell, PowerShell ou CMD à exécuter ; Python et les dépendances tournent dans les conteneurs.
 
-## 01 Architecture
+Télécharger et extraire le ZIP du dépôt ou utiliser un checkout existant, puis ouvrir un terminal dans le dossier contenant `compose.yaml`. Docker doit être installé et démarré. Prévoir environ 24–32 Go de RAM disponibles pour la pile complète, plusieurs dizaines de Go de disque et une connexion Internet au premier build. Ce sont des estimations, sans contrôle RAM bloquant. Le cœur reste utilisable séparément.
 
-Sources (PostgreSQL, CSV, JSON, XLSX, OpenData, logs) → Kafka → Spark → Bronze Parquet → Silver Delta → Gold Iceberg → Trino → Power BI.
+## Démarrage complet
 
-Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est disponible via le profil `elastic`. Airflow est disponible via le profil `orchestration`.
+Les valeurs pédagogiques de secours de Compose sont utilisables directement. Le dépôt ne distribue aucun `.env` avec des secrets personnels. Pour personnaliser les paramètres, créer facultativement `.env` avec un éditeur à partir de `.env.example` avant le premier démarrage. Aucun `cp`, script hôte ou Python hôte n’est nécessaire.
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/architecture.png" width="1024">
-
-## 02 Principes de robustesse
-
-- aucun contrôle RAM hôte bloquant ;
-- aucune résolution Maven pendant `spark-submit` : les JARs sont intégrés à l'image Spark au build ;
-- initialisation S3 via l'API S3 standard (`boto3`) avec création + `head_bucket` + objet marqueur + `head_object` ;
-- PostgreSQL et Kafka ont des bootstraps idempotents auto-validants ;
-- catalogue Iceberg REST persistant sur SQLite avec un seul client JDBC pour le laboratoire mono-instance ;
-- healthchecks explicites sur les services critiques ;
-- PowerShell 5.1 : capture locale de `stderr` des commandes natives sans transformer les warnings JVM en échecs ;
-- le fichier temporaire de version Spark utilisé au build Airflow appartient à `airflow`, ce qui évite un échec final `Operation not permitted` lors du nettoyage de `/tmp` ;
-- le driver Spark exécuté dans Airflow reçoit explicitement le client HTTP AWS SDK v2 `url-connection-client` requis par Iceberg S3FileIO ;
-- l'interface temps réel du driver Jupyter est publiée par le service `spark-jupyter` sur `http://localhost:4040` ;
-- Kibana dispose d'un heap Node.js de 1 Go dans un conteneur limité à 1,5 Go, et l'installateur détecte explicitement un épuisement du heap pendant son démarrage ;
-- l'événement de validation Elastic est envoyé comme un JSON correctement terminé, puis recherché par une requête term exacte dans les index training-logs-* ;
-- succès final uniquement après un vrai smoke test Parquet + Delta + Iceberg et des requêtes Trino.
-
-## 03 Commandes
-
-```powershell
-# cœur uniquement
-.\Install-BigDataLab.ps1 -Reset
-
-# ensemble complet (projet, Airflow, Elastic, OpenData)
-.\Install-BigDataLab.ps1 -Reset -Full
-
-# reprendre sans pull/build
-.\Install-BigDataLab.ps1 -SkipPull -SkipBuild -Full
-
-# vérifier le cœur déjà démarré
-.\Verify-BigDataLab.ps1
-
-# arrêt sans supprimer les volumes
-.\Stop-BigDataLab.ps1
-
-# suppression des conteneurs/volumes de ce projet uniquement
-.\Reset-BigDataLab.ps1
+```text
+docker version
+docker compose version
+docker info --format "{{.OSType}}"
+docker compose --profile full config --quiet
+docker compose --profile full build
+docker compose --profile full up -d
 ```
 
-## 04 Interfaces
+`OSType` doit être `linux`, y compris sous Windows. Compose attend les dépendances saines et les initialisations terminées. La fin de `up -d` ne constitue pas une validation des échanges de données. Le premier démarrage de la pile complète peut prendre plusieurs minutes.
 
-### 04.01 PostgreSQL
+**Portail : http://localhost:8090**. Il regroupe les interfaces, les identifiants réellement configurés et les rapports. Les boutons ouvrent les interfaces des conteneurs déjà démarrés ; ils ne démarrent pas de conteneurs.
 
->> - PostgreSQL : `localhost:5432`
+## Contrôles fonctionnels avec les données existantes
 
-### 04.02 Kafka
->> - Kafka externe : `localhost:29092`
+```text
+docker compose --profile checks run --rm integration-check --full
+docker compose --profile checks run --rm airflow-check
+```
 
-### 04.03 RustFS
->> - RustFS S3 : `http://localhost:9000` 
->> - RustFS console : <i><a href="http://localhost:9001">`http://localhost:9001`</a><br></i>
+Exécuter ces deux commandes successivement. Selon le matériel, prévoir jusqu’à 30–60 minutes pour la première validation complète. La seconde nécessite les tables produites par la première. Chaque commande retourne `0` seulement si ses contrôles passent, et un code non nul en cas d’échec. **La validation complète exige le succès des deux commandes.** Les rapports `reports/integration.json` et `reports/airflow-check.json`, affichés dans le portail, sont horodatés ; les logs Spark détaillés restent dans `reports/`.
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS01.png" width="256">
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/RustFS02.png" width="256">
+Le contrôle publie les CSV, JSON, XLSX, tables PostgreSQL, logs et OpenData déjà présents dans le dépôt ; exécute les pipelines Spark ; compare les comptes et montants CSV/Parquet/Iceberg/Trino ; vérifie les identifiants Kafka/Delta ; ingère `sales.csv` dans Druid depuis S3 ; vérifie un flux Kafka dans Druid et les segments dans RustFS ; exécute des requêtes depuis Superset sur PostgreSQL, Trino et Druid ; vérifie les données de vente dans Elasticsearch après Logstash. Il teste également les interfaces HTTP.
 
-### 04.04 Iceberg
-- Iceberg REST : `http://localhost:8181`
+Le contrôle Airflow charge les deux DAGs et exécute une vérification distribuée des données avec **l’image et le pilote Python Airflow**, contre les workers Spark. Il ne simule pas une exécution complète du scheduler Airflow : celle-ci reste à lancer depuis l’interface pour les exercices.
 
-### 04.05 Spark 
->> - Master UI (`8080`): <i><a href="http://localhost:18080">`http://localhost:18080`</a><br></i>
+Les contrôles écrivent dans les zones pédagogiques `bronze`, `delta`, `gold`, `logs`, `ml` et les datasources Druid `training_sales` / `training_sales_stream`. Ils republient les événements Kafka ; ne pas utiliser ce laboratoire avec des données de production. Les traitements dédupliquent les identifiants/positions de logs ; les comptes Kafka bruts et Elasticsearch peuvent augmenter à chaque relance. Le supervisor Druid Kafka reste actif pour les exercices.
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkMaster.png" width="512">
+Voir [la matrice d’intégration](docs/INTEGRATION_MATRIX.md) pour les liens pris en charge. Une interface utilisateur n’est pas un connecteur universel : les couples sans protocole natif sont explicitement marqués sans intégration directe, et les chaînes entre produits sont testées à travers les connecteurs installés.
 
->> - Workers (`8081`,`8082`): <br>
-    >> <i><a href="http://localhost:18081">`http://localhost:18081`</a><br></i>
-    >> <i><a href="http://localhost:18082">`http://localhost:18082`</a><br></i>
+## Cœur ou profils séparés
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkWorker.png" width="512">
+```text
+docker compose build
+docker compose up -d
+docker compose --profile checks run --rm integration-check
+```
 
->> - Jobs : <i><a href="http://localhost:4040">`http://localhost:4040`</a><br></i>
+| Profil | Produits ajoutés | Commande |
+|---|---|---|
+| `analytics` | Druid, ZooKeeper, métadonnées, Superset | `docker compose --profile analytics up -d --build` |
+| `elastic` | Elasticsearch, Logstash, Kibana | `docker compose --profile elastic up -d` |
+| `orchestration` | Airflow et sa base | `docker compose --profile orchestration up -d --build` |
+| `demo` | API OpenData locale et producteur continu Kafka | `docker compose --profile demo up -d --build` |
+| `full` | Les quatre ensembles ci-dessus | `docker compose --profile full up -d --build` |
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkJobs.png" width="512">
+Les profils `seed` et `logs` restent disponibles pour lancer les producteurs individuellement ; le contrôle d’intégration les exécute lui-même dans son conteneur.
 
->> - History Server (`18083`): <i><a href="http://localhost:18083">`http://localhost:18083`</a><br></i> 
+## Interfaces et identifiants par défaut
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/SparkHistoryServer.png" width="512">
+Les valeurs pédagogiques par défaut utilisent `formation` pour la base, l’utilisateur et le mot de passe SQL PostgreSQL. Un fichier `.env` facultatif prime sur ces valeurs ; il est exclu de Git.
 
->> - Jupyter Lab PySpark (`8888`): <i><a href="http://localhost:8888">`http://localhost:8888`</a><br></i>
+| Produit / interface | Adresse locale | Utilisateur | Mot de passe ou token |
+|---|---|---|---|
+| Portail | http://localhost:8090 | Aucun | Aucun |
+| PostgreSQL / pgAdmin | http://localhost:5050 | `admin@formation.fr` | `formation` |
+| Connexion SQL dans pgAdmin | `postgres-source:5432`, base `formation` | `formation` | `formation` |
+| Kafka UI | http://localhost:8086 | Aucun | Aucun |
+| RustFS | http://localhost:9001 | `labadmin` | `TRAINING_ONLY_S3_PASSWORD` |
+| Spark Master | http://localhost:18080 | Aucun | Aucun |
+| Spark Workers | http://localhost:18081 et http://localhost:18082 | Aucun | Aucun |
+| Spark History | http://localhost:18083 | Aucun | Aucun |
+| Job Spark Jupyter | http://localhost:4040 | Aucun | Seulement pendant une session Spark active |
+| JupyterLab | http://localhost:8888 | Aucun | `CHANGE_ME` par défaut ; valeur `JUPYTER_TOKEN` dans le portail |
+| Trino | http://localhost:8085 | `formation` (libre) | Aucun |
+| Airflow | http://localhost:8088 | Aucun en mode pédagogique `all_admins` | Aucun |
+| Kibana | http://localhost:5601 | Aucun | Aucun |
+| Druid | http://localhost:8889 | Aucun | Aucun |
+| Superset | http://localhost:8089 | `admin` | `formation` |
 
->> Token `3125f8dff8124bc9aa9ffc6cb9bab535`
+Les ports sont modifiables dans `.env` ; le portail suit les mêmes variables. Pour pgAdmin, le serveur est préenregistré mais le mot de passe SQL est demandé à la connexion. Changer une variable après la création d’un compte ou d’un volume PostgreSQL ne change pas son mot de passe : le modifier dans le produit, ou repartir de volumes neufs si les données sont jetables. Jupyter lit son token au démarrage du conteneur. Les notebooks existants sont copiés une fois dans un volume nommé ; les modifications dans Jupyter y sont conservées. Les nouveautés sont copiées si leur chemin n’existe pas déjà.
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/JupyterLab.png" width="512">
+Iceberg REST est une API (`http://localhost:8181/v1/config`) sans console native dans l’image utilisée ; ses tables se consultent dans Superset, Trino ou Jupyter. Elasticsearch a Kibana ; Logstash se supervise avec les logs Docker et les données dans Kibana. ZooKeeper et les bases de métadonnées sont des dépendances internes. Parquet et Delta sont des formats, consultables avec Jupyter/Spark. Power BI Desktop reste une application externe Windows : Superset fournit ici l’interface BI disponible sur les deux systèmes.
 
+Tous les ports publiés sont limités à `127.0.0.1`. Les comptes sont pédagogiques et plusieurs services sont sans authentification. Éviter d’exposer ce Compose sur Internet. Le portail affiche volontairement les accès du laboratoire local.
 
-### 04.06 Trino
-- Trino : `http://localhost:8085` <i><a href="http://localhost:8085">`http://localhost:8085`</a><br></i>
+## Validation statique facultative
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/Trino.png" width="512">
+```text
+docker compose --profile checks build static-check
+docker compose --profile checks run --rm static-check
+```
 
-### 04.07 Airflow
+Cette commande vérifie les fichiers et les contrats des données. Elle ne remplace pas les deux contrôles runtime.
 
-- Airflow : <i><a href="http://localhost:8088">`http://localhost:8088`</a><br></i>
+## Commandes de contrôle et d’exploitation
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/AirFlow.png" width="512">
+```text
+docker compose --profile full ps -a
+docker compose --profile full logs --tail 100
+docker compose logs postgres-bootstrap kafka-init objectstore-init notebooks-init pgadmin-config
+docker compose --profile full logs superset-init druid-coordinator druid-middlemanager
+docker compose --profile full exec airflow airflow dags list
+docker compose exec trino trino --user formation --execute "SHOW CATALOGS"
+docker compose --profile full stop
+docker compose --profile full start
+docker compose --profile full down
+```
 
-### 04.08 Elasticsearch
+`down` conserve les volumes. Pour **supprimer les données Docker de ce projet** et repartir à zéro :
 
-- Elasticsearch : `http://localhost:9200`
->> Kibana : <i><a href="http://localhost:5601">`http://localhost:5601`</a><br></i>
+```text
+docker compose --profile full --profile checks --profile seed --profile logs down --volumes --remove-orphans
+```
 
-<img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/elastic1.png" width="512">
+Cette dernière commande supprime aussi les notebooks modifiés dans le volume. Les données sources du dépôt et les rapports sur l’hôte restent présents. Ne pas utiliser `docker system prune` pour réinitialiser ce laboratoire.
 
+## Portée des vérifications de cette modification
 
-## 05 Données de formation
-
-- `sales.csv` : 2 000 lignes
-- `customers.json` : 100 lignes
-- `catalog.xlsx` : 7 produits
-- `access.log` : 600 lignes
-- `application.log` : 220 lignes
-
-## 06 Limite de validation de l'archive
-
-La distribution contient des contrôles runtime qui s'exécutent sur votre Docker Desktop. L'environnement d'auteur ne possède pas de daemon Docker ; il peut donc valider statiquement les fichiers, syntaxes, dépendances, données et contrats d'exécution, mais ne peut pas prétendre avoir démarré vos conteneurs Windows. Le script d'installation refuse néanmoins d'afficher le succès tant que les contrôles runtime n'ont pas passé sur la machine cible.
-
-
-## 07 Python runtime contract
-PySpark requires the same Python minor version on driver and workers. COMPLETE STABLE discovers the runtime versions and validates Airflow/Spark Python parity with a distributed probe instead of enforcing a number in the installer.
+Configuration validée avec Docker Compose, syntaxes Python et contrats de fichiers vérifiés. L’environnement d’édition ne possède pas de daemon Docker : les images n’y ont pas été construites, les conteneurs n’y ont pas démarré et les intégrations runtime ne sont **pas encore certifiées**. Les commandes de contrôle ci-dessus doivent réussir sur votre machine pour confirmer la pile complète. Les anciens documents de correction décrivent l’historique ; ce README est la procédure actuelle.

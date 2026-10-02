@@ -18,3 +18,7 @@ geoip2
 ipaddress
 advertools
 squarify
+requests==2.32.4
+boto3==1.40.30
+confluent-kafka==2.11.1
+psycopg[binary]==3.2.10

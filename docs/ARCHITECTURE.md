@@ -1,35 +1,7 @@
-# Architecture COMPLETE STABLE
+# Architecture
 
-```text
-PostgreSQL   CSV/JSON/XLSX   OpenData API   access.log/application.log
-     \            |              |                    /
-      +-----------+--------------+-------------------+
-                              |
-                            Kafka
-                              |
-                +-------------+-------------+
-                |                           |
-              Spark                       Logstash
-                |                           |
-         Bronze Parquet                Elasticsearch
-                |                           |
-          Silver Delta                    Kibana
-                |
-           Gold Iceberg
-                |
-              Trino
-                |
-          Power BI / SQL
+Sources CSV/JSON/XLSX/PostgreSQL/OpenData/logs → Kafka → Spark → Parquet/Delta/Iceberg sur RustFS → Trino → Superset.
 
-Airflow orchestre les jobs Spark lorsque le profil orchestration est activé.
+Branche Kafka → Logstash → Elasticsearch → Kibana. Branche Kafka ou S3 CSV → Druid (ZooKeeper, métadonnées PostgreSQL, segments S3 RustFS) → Superset. Airflow orchestre les jobs Spark. pgAdmin administre PostgreSQL ; Kafka UI expose les topics ; Jupyter, Spark Master/Workers/History exposent les outils de formation. Le portail regroupe tous les accès.
 
-JupyterLab fournit un driver PySpark interactif dans un conteneur dédié. Il se
-connecte au master `spark://spark-master:7077`, tandis que les calculs sont
-exécutés par les deux workers. Les notebooks restent dans `spark/notebooks` sur
-la machine hôte.
-
-Les journaux d'événements de toutes les applications Spark sont écrits dans
-S3/RustFS et relus par Spark History Server sur le port 18083.
-```
-
-Le passage Parquet → Delta → Iceberg représente ici des zones pédagogiques Bronze/Silver/Gold, pas une obligation universelle d'architecture Lakehouse.
+Voir INTEGRATION_MATRIX.md pour les preuves de test et les couples sans intégration native.
