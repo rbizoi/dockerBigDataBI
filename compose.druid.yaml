@@ -1,0 +1,167 @@
+# Apache Druid lab overlay. Start it together with compose.yaml:
+# docker compose -f compose.yaml -f compose.druid.yaml --profile druid up -d
+x-druid-environment: &druid-environment
+  DRUID_SINGLE_NODE_CONF: nano-quickstart
+  DRUID_XMS: 512m
+  DRUID_XMX: 512m
+  DRUID_MAXDIRECTMEMORYSIZE: 1g
+  druid_zk_service_host: druid-zookeeper
+  druid_extensions_loadList: '["druid-histogram", "druid-datasketches", "druid-lookups-cached-global", "postgresql-metadata-storage", "druid-csv-extensions"]'
+  druid_metadata_storage_type: postgresql
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-metadata:5432/druid
+  druid_metadata_storage_connector_user: druid
+  druid_metadata_storage_connector_password: druid
+  druid_indexer_runner_javaOptsArray: '["-server", "-Xms512m", "-Xmx512m", "-XX:MaxDirectMemorySize=1g", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]'
+  druid_indexer_fork_property_druid_processing_buffer_sizeBytes: 64MiB
+  druid_processing_numThreads: 1
+  druid_processing_numMergeBuffers: 1
+
+services:
+  druid-metadata:
+    image: postgres:17.11-alpine
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: druid
+      POSTGRES_USER: druid
+      POSTGRES_PASSWORD: druid
+    volumes:
+      - druid-metadata-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U druid -d druid"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    networks: [training-net]
+
+  druid-zookeeper:
+    image: zookeeper:3.9.4
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 256m
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+    volumes:
+      - druid-zookeeper-data:/data
+      - druid-zookeeper-datalog:/datalog
+    networks: [training-net]
+
+  druid-coordinator:
+    image: apache/druid:${DRUID_VERSION:-38.0.0}
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 2g
+    depends_on:
+      druid-metadata:
+        condition: service_healthy
+      druid-zookeeper:
+        condition: service_started
+    environment:
+      <<: *druid-environment
+      druid_host: druid-coordinator
+    volumes:
+      - druid-coordinator-var:/opt/druid/var
+      - druid-shared:/opt/shared
+    command: ["coordinator"]
+    networks: [training-net]
+
+  druid-broker:
+    image: apache/druid:${DRUID_VERSION:-38.0.0}
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 2g
+    depends_on:
+      druid-metadata:
+        condition: service_healthy
+      druid-zookeeper:
+        condition: service_started
+      druid-coordinator:
+        condition: service_started
+    environment:
+      <<: *druid-environment
+      druid_host: druid-broker
+    volumes:
+      - druid-broker-var:/opt/druid/var
+    command: ["broker"]
+    networks: [training-net]
+
+  druid-historical:
+    image: apache/druid:${DRUID_VERSION:-38.0.0}
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 2g
+    depends_on:
+      druid-metadata:
+        condition: service_healthy
+      druid-zookeeper:
+        condition: service_started
+      druid-coordinator:
+        condition: service_started
+    environment:
+      <<: *druid-environment
+      druid_host: druid-historical
+    volumes:
+      - druid-historical-var:/opt/druid/var
+      - druid-shared:/opt/shared
+    command: ["historical"]
+    networks: [training-net]
+
+  druid-middlemanager:
+    image: apache/druid:${DRUID_VERSION:-38.0.0}
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 3g
+    depends_on:
+      druid-metadata:
+        condition: service_healthy
+      druid-zookeeper:
+        condition: service_started
+      druid-coordinator:
+        condition: service_started
+    environment:
+      <<: *druid-environment
+      druid_host: druid-middlemanager
+    volumes:
+      - druid-middlemanager-var:/opt/druid/var
+      - druid-shared:/opt/shared
+      - ./data/input:/opt/druid/ingestion:ro
+    command: ["middleManager"]
+    networks: [training-net]
+
+  druid-router:
+    image: apache/druid:${DRUID_VERSION:-38.0.0}
+    profiles: ["druid"]
+    restart: unless-stopped
+    mem_limit: 2g
+    depends_on:
+      druid-metadata:
+        condition: service_healthy
+      druid-zookeeper:
+        condition: service_started
+      druid-coordinator:
+        condition: service_started
+      druid-broker:
+        condition: service_started
+    environment:
+      <<: *druid-environment
+      druid_host: druid-router
+    volumes:
+      - druid-router-var:/opt/druid/var
+    ports:
+      - "127.0.0.1:${DRUID_PORT:-8889}:8888"
+    command: ["router"]
+    networks: [training-net]
+
+volumes:
+  druid-metadata-data:
+  druid-zookeeper-data:
+  druid-zookeeper-datalog:
+  druid-coordinator-var:
+  druid-broker-var:
+  druid-historical-var:
+  druid-middlemanager-var:
+  druid-router-var:
+  druid-shared:
