@@ -6,13 +6,11 @@
       "timestampSpec": { "column": "event_ts", "format": "auto" },
       "dimensionsSpec": {
         "dimensions": [
-          "sale_id", "customer_id", "country", "product_id", "product_name", "category"
+          "sale_id", "customer_id", "country", "product_id", "product_name", "category", "unit_price", "discount"
         ]
       },
       "metricsSpec": [
         { "type": "longSum", "name": "quantity", "fieldName": "quantity" },
-        { "type": "doubleSum", "name": "unit_price", "fieldName": "unit_price" },
-        { "type": "doubleSum", "name": "discount", "fieldName": "discount" },
         { "type": "doubleSum", "name": "amount", "fieldName": "amount" }
       ],
       "granularitySpec": {
