@@ -4,7 +4,7 @@ Laboratoire Docker Desktop pour une formation Big Data / Business Intelligence s
 
 ## 01 Architecture
 
-Sources (PostgreSQL, CSV, JSON, XLSX, OpenData, logs) → Kafka → Spark → Bronze Parquet → Silver Delta → Gold Iceberg → Trino → Power BI.
+Sources (PostgreSQL, CSV, JSON, XLSX, OpenData, logs) → Kafka → Spark → Bronze Parquet → Silver Delta → Gold Iceberg → Trino → Power BI. Apache Druid est disponible en profil optionnel pour le service des faits dénormalisés.
 
 Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est disponible via le profil `elastic`. Airflow est disponible via le profil `orchestration`.
 
@@ -111,6 +111,11 @@ Une branche indépendante Kafka → Logstash → Elasticsearch → Kibana est di
 
 <img src="https://raw.githubusercontent.com/rbizoi/dockerBigDataBI/refs/heads/master/images/elastic1.png" width="512">
 
+
+### 04.09 Apache Druid
+
+- Console Druid (profil optionnel) : [http://localhost:8889](http://localhost:8889)
+- Démarrage et chargement de l'exemple de faits de ventes dénormalisés : [druid/README.md](druid/README.md)
 
 ## 05 Données de formation
 
