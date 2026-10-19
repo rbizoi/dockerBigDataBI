@@ -27,7 +27,7 @@ Le chargeur soumet la spécification `ingestion/sales-fact.json` à Druid et att
 La datasource `sales_fact_denormalized` conserve une ligne par vente et inclut directement ses attributs de filtrage BI :
 
 - mesures : `quantity`, `unit_price`, `discount`, `amount` ;
-- dimensions : `customer_id`, `country`, `product_id`, `product_name`, `category` ;
+- dimensions : `customer_id`, `country`, `product_id`, `product_name`, `category`, `unit_price`, `discount` ;
 - horodatage : `event_ts`, converti en `__time` par Druid.
 
 Le rollup est désactivé pour préserver le grain transactionnel du fichier. Il n'y a donc aucune jointure de dimension dans les requêtes BI. Ce jeu de formation a déjà les attributs produit et pays dans chaque ligne ; pour une source normalisée, enrichissez les faits avec les dimensions avant ou pendant l'ingestion. Les lookups Druid conviennent aux petits mappings devant toujours afficher leur valeur courante, mais ils ne conservent pas d'historique.
