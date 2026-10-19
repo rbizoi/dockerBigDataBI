@@ -1,0 +1,37 @@
+{
+  "type": "index",
+  "spec": {
+    "dataSchema": {
+      "dataSource": "sales_fact_denormalized",
+      "timestampSpec": { "column": "event_ts", "format": "auto" },
+      "dimensionsSpec": {
+        "dimensions": [
+          "sale_id", "customer_id", "country", "product_id", "product_name", "category"
+        ]
+      },
+      "metricsSpec": [
+        { "type": "longSum", "name": "quantity", "fieldName": "quantity" },
+        { "type": "doubleSum", "name": "unit_price", "fieldName": "unit_price" },
+        { "type": "doubleSum", "name": "discount", "fieldName": "discount" },
+        { "type": "doubleSum", "name": "amount", "fieldName": "amount" }
+      ],
+      "granularitySpec": {
+        "type": "uniform",
+        "segmentGranularity": "MONTH",
+        "queryGranularity": "NONE",
+        "rollup": false
+      }
+    },
+    "ioConfig": {
+      "type": "index",
+      "inputSource": {
+        "type": "local",
+        "baseDir": "/opt/druid/ingestion",
+        "filter": "sales.csv"
+      },
+      "inputFormat": { "type": "csv", "findColumnsFromHeader": true },
+      "appendToExisting": false
+    },
+    "tuningConfig": { "type": "index", "maxRowsPerSegment": 500000 }
+  }
+}
